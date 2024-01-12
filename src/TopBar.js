@@ -9,11 +9,17 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import {useState} from "react";
-import theme from "./theme";
+import DocumentManager from ".//managment/documentManager";
 import {useTheme} from "@mui/material";
+import PageButtonStackItem from "./ContentComponents/StackItems/PageButtonStackItem";
+import Property from "./ContentComponents/PropertiesComponents/Property";
 
 
-export default function TopBar() {
+export default function TopBar(props) {
+    const pageID = props.pageID;
+    const rootID = DocumentManager.getRootPage()._id;
+
+
 
     const handleMenuClick = (event: MouseEvent) =>{
         if (menuIconsVisible){
@@ -67,7 +73,11 @@ export default function TopBar() {
                         </MenuItem>
                     </Menu>
                     <Typography variant="h6" sx={{ml:4, color:"text.main"}} >
-                        CurrentDirectory
+                        {
+                            DocumentManager.getDirectoryOfDocument(pageID).map((pageID) => {
+                                return (<PageButtonStackItem pageID={pageID} onPageUpdate={props.onPageUpdate}/>);
+                            })
+                        }
                     </Typography>
                 </Toolbar>
             </AppBar>

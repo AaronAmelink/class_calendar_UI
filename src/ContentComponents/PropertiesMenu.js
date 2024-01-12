@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import * as React from "react";
@@ -16,20 +16,24 @@ import AddPropertyMenu from "./PropertiesComponents/AddPropertyMenu";
 
 export default function PropertiesMenu(props) {
     const [menuVisible, setMenuVisible] = useState(false);
-    const pageID = props.pageID;
     const [anchorEl, setAnchorEl] = useState(null);
 
-    const Properties = DocumentManager.getPageProperties().map(prop => {
-        return (<Property property={prop}/>);
-    });
+    const [properties, SetProperties] = useState([...DocumentManager.getCurrentPageProperties()]);
 
-    const [properties, SetProperties] = useState(Properties);
+    useEffect(() => {
+        SetProperties([...DocumentManager.getCurrentPageProperties()]);
+    }, [props.pageID]);
+
 
     const updateProperties = () => {
-        const Properties = DocumentManager.getPageProperties().map(prop => {
-            return (<Property property={prop}/>);
-        });
-        SetProperties(Properties);
+        SetProperties([...DocumentManager.getCurrentPageProperties()]);
+    }
+
+
+
+    function removeProperty(id){
+        DocumentManager.removeProperty(id);
+        SetProperties([...DocumentManager.getCurrentPageProperties()]);
     }
 
     const handleMenuClick = (event: MouseEvent) =>{
@@ -49,7 +53,6 @@ export default function PropertiesMenu(props) {
         setMenuVisible(true);
         setAnchorEl(event.currentTarget);
     }
-
 
     return(
         <Grid item sx={{m:0, minwidth:4/8, mt:2.5}}>
@@ -79,7 +82,11 @@ export default function PropertiesMenu(props) {
             >
                 <MenuItem>
                     <Stack container>
-                        {properties}
+                        {
+                            properties.map(prop => {
+                                return (<Property property={prop} removeProperty={removeProperty}/>);
+                            })
+                        }
                     </Stack>
                 </MenuItem>
                 <AddPropertyMenu updateProperties={updateProperties}/>

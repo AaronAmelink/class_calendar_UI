@@ -1,11 +1,13 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import DocumentManager from "../managment/documentManager";
 import {TextField, Typography} from "@mui/material";
 
 export default function PageName(props) {
-    const pageId = props.pageID;
     const [pageName, setPageName] = useState(DocumentManager.getCurrentPageName());
 
+    useEffect(() => {
+        setPageName(DocumentManager.getCurrentPageName());
+    }, [props.pageID]);
 
     function handleChange(value) {
         setPageName(value);

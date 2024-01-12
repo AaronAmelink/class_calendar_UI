@@ -5,7 +5,6 @@ import DocumentManager from "../../managment/documentManager"
 
 export default function NameValue(props){
     const initialValue = DocumentManager.getProperty(props.id).name;
-    console.log(initialValue);
     const [text, setText] = useState(initialValue);
 
     function handleChange(value) {

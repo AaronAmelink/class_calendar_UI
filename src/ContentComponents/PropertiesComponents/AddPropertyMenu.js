@@ -15,7 +15,7 @@ export default function AddPropertyMenu(props) {
     const [anchorEl, setAnchorEl] = React.useState(null);
 
 
-    const handleAddClick = ()=> {
+    const handleTextAddClick = ()=> {
         //need to fix state delay
         DocumentManager.addTextProperty();
         props.updateProperties();
@@ -34,7 +34,7 @@ export default function AddPropertyMenu(props) {
         <MenuItem sx={{color:"text.main",mr:1,ml:1,mt:0,mb:0}} onClick={menuVisible ? null : handleMenuOpen}>
             <AddIcon/>
             <Typography variant="subtitle1">
-                Add Property
+                New Property
             </Typography>
             <Menu
                 spacing={0}
@@ -52,7 +52,7 @@ export default function AddPropertyMenu(props) {
                 <MenuItem sx={{m:0}}>
                     <Stack container>
                         <Stack item aria-label="add text" sx={{color:"text.main", minWidth:"200px"}}>
-                            <Grid container onClick={handleAddClick}>
+                            <Grid container onClick={handleTextAddClick}>
                                 <Grid item>
                                     <ShortTextIcon />
                                 </Grid>
@@ -62,6 +62,7 @@ export default function AddPropertyMenu(props) {
                                     </Typography>
                                 </Grid>
                             </Grid>
+
                         </Stack>
                     </Stack>
                 </MenuItem>

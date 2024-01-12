@@ -44,25 +44,59 @@ class DocumentManager{
             });
             this.currentPageNameDirty = false;
         }
-        this.pages.forEach(page => {
-            if (page._id === this.currentPage._id){
-                page.content = this.currentPage.content;
-                page.properties = this.currentPage.properties;
-                page.page_name = this.currentPage.page_name;
+        this.setUpdatesLocally();
+    }
+
+    setUpdatesLocally(){//this function should be accompanied by a sister function that calls backend to set changes.
+        // call other function
+        for (let i = 0; i < this.updates.length; i++){
+            let match = this.pages.find((page) => page._id === this.updates[i].page_id);
+            if (this.updates[i].type === "content"){
+                match.content = this.updates[i].newValue;
             }
-        });
+            if (this.updates[i].type === "properties"){
+                match.properties = this.updates[i].newValue;
+            }
+            if (this.updates[i].type === "name"){
+                match.name = this.updates[i].newValue;
+            }
+        }
+        this.updates = [];
+        console.log(this.pages);
+    }
+
+    getRootPage(){
+        for (let i = 0; i < this.pages.length; i++){
+            if (this.pages[i].parent_id === "null"){
+                return this.pages[i];
+            }
+        }
+        return ("no page found");
     }
 
     loadPages(pages){
+        this.pages = [];
         pages.forEach(page => {
             this.pages.push(page);
         })
     }
 
+    getDirectoryOfDocument(pageID){
+        let directory = [];
+        let currentID = pageID;
+        while (currentID !== "null"){
+            directory.splice(0,0, currentID);
+            console.log(this.getPage(currentID).parent_id);
+            currentID = this.getPage(currentID).parent_id;
+
+        }
+        return directory;
+    }
+
     setCurrentPage(newPageID){
         //this.maintainChanges();
         this.pages.forEach(page => {
-            if (page._id == newPageID) {
+            if (page._id === newPageID) {
                 this.currentPage = page;
             }
         });
@@ -96,16 +130,79 @@ class DocumentManager{
         return null;
     }
 
-    getPageProperties(){
+    getCurrentPageProperties(){
         return this.currentPage.properties;
+    }
+
+    getPageProperties(id){
+        let match = this.pages.find((page) => page._id === id);
+        return (match.properties);
     }
 
 
     addTextProperty() {
         this.currentPage.properties.push({
-         type:"text", name:"", value:"", id: uuidv4()
+         type:"text", value:" ", id: uuidv4()
         });
         this.currentPagePropsDirty = true;
+    }
+
+    addTextContentByID(referralID){
+        let index = this.getContentIndex(referralID);
+        this.currentPage.content.splice(index+1, 0,{
+            type:"text", value:" ", id: uuidv4()
+        } );
+        this.currentPageContentDirty = true;
+    }
+
+    addTextContentByIndex(referralIndex){
+        this.currentPage.content.splice(referralIndex+1, 0,{
+            type:"text", value:" ", id: uuidv4()
+        } );
+        this.currentPageContentDirty = true;
+    }
+
+    addNewPageByIndex(referralIndex, parentID){
+        let newPageID = uuidv4();
+        this.currentPage.content.splice(referralIndex+1, 0,{
+            type:"page", value:"New Page", id: uuidv4(), linkedPageID : newPageID
+        } );
+
+        this.pages.push({
+            _id : newPageID,
+            page_name:"New Page",
+            user_id: "c4442bac-f56e-4b05-8b6e-c1e8a10c1e68", //need to change
+            content: [{type:"text",value:"goodbye",id:0}],
+            parent_id : parentID,
+            properties : []
+        })
+        this.currentPageContentDirty = true;
+    }
+
+    addDividerContentByID(referralID){
+        let index = this.getContentIndex(referralID);
+        this.currentPage.content.splice(index+1, 0,{
+            type:"divider", id: uuidv4()
+        } );
+        this.currentPageContentDirty = true;
+    }
+
+    addDividerContentByIndex(referralIndex){
+        this.currentPage.content.splice(referralIndex+1, 0,{
+            type:"divider", id: uuidv4()
+        } );
+        this.currentPageContentDirty = true;
+    }
+
+    addCheckBoxByIndex(referralIndex) {
+        this.currentPage.content.splice(referralIndex+1, 0,{
+            type:"checkbox",
+            id: uuidv4(),
+            value: " ",
+            checked: false,
+            indent: 0
+        } );
+        this.currentPageContentDirty = true;
     }
 
 
@@ -113,14 +210,17 @@ class DocumentManager{
         return this.currentPage.page_name;
     }
 
-    updatePageName(pageID, newName) {
-        this.pages.forEach(page => {
-            if (pageID === page.id){
-                page.name = newName;
-            }
-        });
-        this.currentPage.name = newName;
+    getPageName(pageID){
+        return this.pages.find((page) => page._id === pageID).page_name;
+    }
+
+    updatePageName(newName) {
+        this.currentPage.page_name = newName;
         this.currentPageNameDirty = true;
+    }
+
+    getPage(pageID){
+        return this.pages.find((page) => page._id === pageID);
     }
 
     updateContent(id, contentObject){
@@ -149,7 +249,6 @@ class DocumentManager{
                 this.currentPage.properties.splice(i, 1);
             }
         }
-        console.log(this.currentPage.properties);
         this.currentPagePropsDirty = true;
     }
 
@@ -170,6 +269,10 @@ class DocumentManager{
         }
         return null;
     }
+
+
+
+
 }
 
 const instance = new DocumentManager();
