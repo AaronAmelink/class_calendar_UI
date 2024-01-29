@@ -74,6 +74,8 @@ class DocumentManager{
         return ("no page found");
     }
 
+
+
     loadPages(pages){
         this.pages = [];
         pages.forEach(page => {
@@ -84,12 +86,14 @@ class DocumentManager{
     getDirectoryOfDocument(pageID){
         let directory = [];
         let currentID = pageID;
-        while (currentID !== "null"){
+        while (currentID != null){
             directory.splice(0,0, currentID);
-            console.log(this.getPage(currentID).parent_id);
-            currentID = this.getPage(currentID).parent_id;
+            let parent = this.getPage(currentID).parent_id;
+            currentID = parent;
+
 
         }
+        console.log(directory);
         return directory;
     }
 
@@ -162,6 +166,8 @@ class DocumentManager{
         this.currentPageContentDirty = true;
     }
 
+
+
     addNewPageByIndex(referralIndex, parentID){
         let newPageID = uuidv4();
         this.currentPage.content.splice(referralIndex+1, 0,{
@@ -171,8 +177,8 @@ class DocumentManager{
         this.pages.push({
             _id : newPageID,
             page_name:"New Page",
-            user_id: "c4442bac-f56e-4b05-8b6e-c1e8a10c1e68", //need to change
-            content: [{type:"text",value:"goodbye",id:0}],
+            user_id: window.sessionStorage.getItem("user_id"), //need to change
+            content: [{type:"text",value:" ",id:0}],
             parent_id : parentID,
             properties : []
         })
@@ -195,14 +201,16 @@ class DocumentManager{
     }
 
     addCheckBoxByIndex(referralIndex) {
+        let nId = uuidv4();
         this.currentPage.content.splice(referralIndex+1, 0,{
             type:"checkbox",
-            id: uuidv4(),
+            id: nId,
             value: " ",
             checked: false,
             indent: 0
         } );
         this.currentPageContentDirty = true;
+        return nId
     }
 
 
@@ -211,7 +219,15 @@ class DocumentManager{
     }
 
     getPageName(pageID){
-        return this.pages.find((page) => page._id === pageID).page_name;
+        let value;
+        this.pages.forEach((page) => {
+            if (page._id === pageID){
+
+                value = page.page_name;
+            }
+        })
+
+        return value;
     }
 
     updatePageName(newName) {

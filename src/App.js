@@ -1,17 +1,15 @@
 import {useEffect, useState} from "react";
 import Document from './document';
 import LogInPage from "./LogInPage";
+import httpHelper from "./managment/httpHelper";
 
 function App(){
-    const [userLogged, setUserLogged] = useState(false);
-
-    useEffect(() => {
-        setUserLogged(window.sessionStorage.getItem("authToken"));
-    }, [window.sessionStorage.getItem("authToken")]);
-
+    const [userLogged, setUserLogged] = useState(window.sessionStorage.getItem("authToken") !== null);
+    console.log("rendered");
     const RenderedPage = () => {
         if (!userLogged){
-            return (<LogInPage/>);
+
+            return (<LogInPage setLoggedin={setUserLogged}/>);
         }
         else {
             return (<Document/>)

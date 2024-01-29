@@ -50,6 +50,18 @@ export default function CheckboxStackItem(props) {
 
         if (e.key === "Shift") setShiftDown(true);
 
+        if (e.key === "Enter"){
+            let insertedID = DocumentManager.addCheckBoxByIndex(index);
+            DocumentManager.updateContent(insertedID, {
+                value : " ",
+                id :insertedID,
+                type: "checkbox",
+                checked : checked,
+                indent : indent
+            })
+            props.onPageUpdate();
+        }
+
         if (e.key === "Tab" && DocumentManager.currentPage.content[index].indent < 6 && DocumentManager.currentPage.content[index].indent >= 0){
             if (shiftDown && DocumentManager.currentPage.content[index].indent > 0){
                 setIndent(indent-1);

@@ -8,7 +8,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import DocumentManager from ".//managment/documentManager";
 import {useTheme} from "@mui/material";
 import PageButtonStackItem from "./ContentComponents/StackItems/PageButtonStackItem";
@@ -16,8 +16,11 @@ import Property from "./ContentComponents/PropertiesComponents/Property";
 
 
 export default function TopBar(props) {
-    const pageID = props.pageID;
-    const rootID = DocumentManager.getRootPage()._id;
+    const [pageID, setPageID] = useState(props.pageID);
+    console.log(props.pageID);
+    useEffect(() => {
+        setPageID(props.pageID);
+    }, [props.pageID]);
 
 
 

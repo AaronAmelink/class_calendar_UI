@@ -34,7 +34,7 @@ export default function StackItem(props) {
         }
         if (props.object.type === "checkbox"){
             return(
-                <CheckboxStackItem id={id} index={index} removeContent={props.removeContent}/>
+                <CheckboxStackItem id={id} index={index} removeContent={props.removeContent} onPageUpdate={props.onPageUpdate}/>
             );
         }
         if (props.object.type === "page"){

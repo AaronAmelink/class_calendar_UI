@@ -19,33 +19,62 @@ import DocumentManager from "./managment/documentManager";
 import Container from "@mui/material/Container";
 import httpHelper from "./managment/httpHelper";
 
-function LogInPage(){
-    const [email, setEmail] = useState("hallo");
-    const [pswrd, setPwsrd] = useState("hallo");
-    const [registering, setRegistering] = useState(true);
+function LogInPage(props){
+    const [displayPswrdNotMatching, setDisplayPswrdNotMatching] = useState();
+    const [loggingIn, setLoggingIn] = useState(true);
+    const [emailTaken, setEmailTaken] = useState(false);
+    const [wrongPassword, setWrongPassword] = useState(false);
 
 
-    async function handleSubmit() {
-        await httpHelper.loginRequest(email, pswrd);
-        console.log("sent request");
-    }
-    const RenderedInputs = () =>{
-        if (registering){
-            return (
-                <TextField
-                    margin="normal"
-                    required
-                    fullWidth
-                    label="Password"
-                    type="password"
-                    autoComplete="current-password"
-                    text={pswrd}
-                    sx={{ input: { color: 'text.main' }, width: '100%', textOverflow: 'clip' }}
-                    color={'secondary'}
-                />
-            );
+    async function handleSubmit(event) {
+        event.preventDefault();
+        const data = new FormData(event.currentTarget);
+        let email = data.get('email');
+        let password = data.get('password');
+        let confirmPassword = data.get('confirm password');
+        let userName = data.get('username');
+        setEmailTaken(false);
+        if (userName === null){
+            userName = '';
+        }
+        if (password === null){
+            password = '';
+        }
+        if (email === null){
+            email = ''
+        }
+        if (!loggingIn){
+            if (password !== confirmPassword){
+                setDisplayPswrdNotMatching(true);
+            }
+            else{
+                setDisplayPswrdNotMatching(false);
+                const res = await httpHelper.registerRequest(userName, email, password);
+                console.log(res);
+                if (res.error && res.error === "email taken"){
+                    setEmailTaken(true);
+                }
+
+            }
         }
         else{
+            const res = await httpHelper.loginRequest(email, password);
+            if (res.auth === true){
+                console.log("logged in");
+                window.sessionStorage.setItem("authToken", 'Bearer ' + res.signature);
+                window.sessionStorage.setItem("user_id", res.userProfile._id);
+                props.setLoggedin(true);
+            }
+            if (res.auth === false){
+                console.log("incorrect email/password");
+                setWrongPassword(true);
+            }
+        }
+
+    }
+
+    const RenderedInputs = () =>{
+        if (loggingIn){
             return (
                 <div>
                     <TextField
@@ -53,21 +82,61 @@ function LogInPage(){
                         required
                         fullWidth
                         label="Password"
+                        name="password"
                         type="password"
                         autoComplete="current-password"
+                        onSubmit={handleSubmit}
+                        sx={{ input: { color: 'text.main' }, width: '100%', textOverflow: 'clip' }}
+                        color={'secondary'}
+                    />
+                    {wrongPassword &&
+                        <h2>Wrong password</h2>
+                    }
+                </div>
+
+            );
+        }
+        else{
+            return (
+                <div>
+                    <TextField
+                        noValidate
+                        margin="normal"
+                        required
+                        fullWidth
+                        name="username"
+                        label="User Name"
                         sx={{ input: { color: 'text.main' }, width: '100%', textOverflow: 'clip' }}
                         color={'secondary'}
                     />
                     <TextField
+                        noValidate
+                        margin="normal"
+                        required
+                        fullWidth
+                        type="password"
+                        name="password"
+                        label="Set Password"
+                        sx={{ input: { color: 'text.main' }, width: '100%', textOverflow: 'clip' }}
+                        color={'secondary'}
+                    />
+                    <TextField
+                        noValidate
+                        type="password"
                         margin="normal"
                         required
                         fullWidth
                         label="Confirm Password"
-                        type="password"
-                        autoComplete="current-password"
+                        name="confirm password"
                         sx={{ input: { color: 'text.main' }, width: '100%', textOverflow: 'clip' }}
                         color={'secondary'}
                     />
+                    {displayPswrdNotMatching &&
+                    <h2>Passwords do not match</h2>
+                    }
+                    {emailTaken &&
+                        <h2>Email taken</h2>
+                    }
                 </div>
             );
         }
@@ -75,14 +144,14 @@ function LogInPage(){
 
     useEffect(() => {
 
-    }, [registering]);
+    }, [loggingIn]);
 
     function handleClick() {
-        if (registering){
-            setRegistering(false);
+        if (loggingIn){
+            setLoggingIn(false);
         }
         else {
-            setRegistering(true);
+            setLoggingIn(true);
         }
     }
 
@@ -105,32 +174,30 @@ function LogInPage(){
                     </Avatar>
                     <Grid container sx={{ mt: 3, mb: 2, ml:3}} justifyContent="center" alignItems="center">
                         <Grid>
-                            <Button color={"secondary"} variant={!registering ? "outlined" : "contained"} onClick={handleClick} sx={{mr:4}}>Login</Button>
+                            <Button color={"secondary"} variant={!loggingIn ? "outlined" : "contained"} onClick={handleClick} sx={{mr:4}}>Login</Button>
                         </Grid>
                         <Grid>
-                            <Button color={"secondary"} variant={registering ? "outlined" : "contained"} onClick={handleClick} sx={{mr:4}}> Sign up </Button>
+                            <Button color={"secondary"} variant={loggingIn ? "outlined" : "contained"} onClick={handleClick} sx={{mr:4}}> Sign up </Button>
                         </Grid>
                     </Grid>
-                    <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1}}>
+                    <Box component="form" noValidate sx={{ mt: 1}} onSubmit={handleSubmit}>
                         <TextField
                             required
                             label="Email Address"
-                            autoComplete="email"
                             margin="normal"
-                            autoFocus
-                            text={email}
+                            name="email"
                             sx={{ input: { color: 'text.main' }, width: '100%', textOverflow: 'clip' }}
                             color={'secondary'}
                         />
                         <RenderedInputs/>
                         <Button
-                            type="submit"
                             fullWidth
                             variant="contained"
                             color="secondary"
+                            type="submit"
                             sx={{ mt: 3, mb: 2 }}
                         >
-                            {registering ? "Sign in" : "Sign up"}
+                            {loggingIn ? "Sign in" : "Sign up"}
                         </Button>
                     </Box>
                 </Box>
