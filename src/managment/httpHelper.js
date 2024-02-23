@@ -3,11 +3,6 @@ const {axios} = require('axios');
 class httpHelper{
 
     constructor() {
-        if (!httpHelper.instance){
-            httpHelper.instance = this;
-        }
-
-        return httpHelper.instance;
     }
 
     async getPages(){
@@ -18,6 +13,46 @@ class httpHelper{
             return response;
         }
         catch (e){
+            console.log(e);
+            return ("error fetching");
+        }
+    }
+
+    async addNewPage(referenceID, newID){
+        try {
+            const response = await fetch("http://localhost:5050/api/data/addNewPage", {
+                method: "POST", // *GET, POST, PUT, DELETE, etc.
+                mode: "cors", // no-cors, *cors, same-origin
+                cache: "default", // *default, no-cache, reload, force-cache, only-if-cached
+                credentials: "same-origin", // include, *same-origin, omit
+                headers: {
+                    "Authorization": window.sessionStorage.getItem("authToken"),
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({page_name: "New Page", parent_id : referenceID, new_page_id:newID})
+            })
+            return response.json();
+        } catch (e) {
+            console.log(e);
+            return ("error fetching");
+        }
+    }
+
+    async submitChanges(updateObj) {
+        try {
+            const response = await fetch("http://localhost:5050/api/data/updatePage", {
+                method: "POST", // *GET, POST, PUT, DELETE, etc.
+                mode: "cors", // no-cors, *cors, same-origin
+                cache: "default", // *default, no-cache, reload, force-cache, only-if-cached
+                credentials: "same-origin", // include, *same-origin, omit
+                headers: {
+                    "Authorization": window.sessionStorage.getItem("authToken"),
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({pageUpdates: updateObj})
+            })
+            return response.json();
+        } catch (e) {
             console.log(e);
             return ("error fetching");
         }
@@ -68,5 +103,4 @@ class httpHelper{
 
 }
 
-const instance = new httpHelper();
-module.exports = instance;
+module.exports = httpHelper;

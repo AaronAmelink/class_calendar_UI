@@ -21,6 +21,11 @@ export default function CheckboxStackItem(props) {
             indent : indent
         })
     }
+    const moveCaretAtEnd = (e) => {
+        var temp_value = e.target.value
+        e.target.value = ''
+        e.target.value = temp_value
+    }
 
     const handleCheckChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 
@@ -104,6 +109,7 @@ export default function CheckboxStackItem(props) {
             <Grid item sx={{mt: 0.5, ml:1}} xs="11">
                 <TextField
                     id={id}
+                    autoFocus={props.focused}
                     variant={"standard"}
                     InputProps={{disableUnderline: true, style : {color: "#989898"}}}
                     sx={{ input: { color: 'text.main' }, width: '100%', textOverflow: 'clip' }}

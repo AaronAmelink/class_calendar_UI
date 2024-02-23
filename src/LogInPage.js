@@ -17,8 +17,8 @@ import Box from "@mui/material/Box";
 import PersonIcon from '@mui/icons-material/Person';
 import DocumentManager from "./managment/documentManager";
 import Container from "@mui/material/Container";
-import httpHelper from "./managment/httpHelper";
-
+const httpHelperClass = require('./managment/httpHelper');
+const httpHelper = new httpHelperClass();
 function LogInPage(props){
     const [displayPswrdNotMatching, setDisplayPswrdNotMatching] = useState();
     const [loggingIn, setLoggingIn] = useState(true);

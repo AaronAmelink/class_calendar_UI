@@ -7,7 +7,6 @@ import {useEffect, useState} from "react";
 export default function PageButtonStackItem(props) {
     const linkedPageId = props.pageID;
     let name = DocumentManager.getPageName(linkedPageId);
-    console.log(name);
     const [pageName, setPageName] = useState(name);
     useEffect(() => {
         setPageName(DocumentManager.getPageName(linkedPageId));
@@ -16,7 +15,6 @@ export default function PageButtonStackItem(props) {
 
 
     const handleClick = () => {
-        console.log("button pressed");
         DocumentManager.maintainChanges();
         DocumentManager.setCurrentPage(linkedPageId);
         props.onPageUpdate();

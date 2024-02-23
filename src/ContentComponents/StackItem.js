@@ -15,12 +15,14 @@ export default function StackItem(props) {
     const [isGarbageVisible, setIsGarbageVisible] = useState(false);
     const index =  props.index;
 
+
     const handleMouseEnter = () =>{
         setIsGarbageVisible(true);
     }
     const handleMouseExit = () =>{
         setIsGarbageVisible(false);
     }
+
     const RenderObject = () =>{
         if (props.object.type === "text"){
             return(

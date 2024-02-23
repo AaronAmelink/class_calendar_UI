@@ -1,15 +1,29 @@
 const { v4: uuidv4 } = require('uuid');
+const httpHelperClass = require('./httpHelper');
+const httpHelper = new httpHelperClass();
 
 class DocumentManager{
     constructor() {
         if (!DocumentManager.instance) {
             DocumentManager.instance = this;
-            this.pages = []
-            this.currentPage = {}
-            this.currentPageContentDirty = false;
-            this.currentPagePropsDirty = false;
-            this.currentPageNameDirty = false;
-            this.updates=[]
+            this.pages = [];
+            this.saved = false;
+            this.currentPage = {};
+            this.updates={
+                "page_id" : null,
+                "content" : {
+                    "dirty" : false,
+                    "changes" : null //would be an array if changes :D
+                },
+                "properties" : {
+                    "dirty" : false,
+                    "changes" : null,
+                },
+                "name" : {
+                    "dirty" : false,
+                    "newName" : null
+                }
+            }
 
         }
         return DocumentManager.instance;
@@ -19,50 +33,43 @@ class DocumentManager{
     //this.updates is current way of doing that
     //every minute or so updates should be sent to backend
     //backend will parse through and update accordingly
-    maintainChanges() {
-        if (this.currentPagePropsDirty) {
-            this.updates.push({
-                type: "properties",
-                newValue : this.currentPage.properties,
-                page_id : this.currentPage._id
-            });
-            this.currentPagePropsDirty = false;
+    async maintainChanges() {//should be called whenever changes should be saved. ie. page change or roughly every 3 seconds
+        this.updates.page_id = this.currentPage._id;
+        if (this.updates.content.dirty) {
+            this.updates.content.changes = this.currentPage.content;
         }
-        if (this.currentPageContentDirty) {
-            this.updates.push({
-                type: "content",
-                newValue : this.currentPage.content,
-                page_id : this.currentPage._id
-            });
-            this.currentPageContentDirty = false;
+        if (this.updates.properties.dirty) {
+            this.updates.properties.changes = this.currentPage.properties;
         }
-        if (this.currentPageNameDirty) {
-            this.updates.push({
-                type: "name",
-                newValue : this.currentPage.name,
-                page_id : this.currentPage._id
-            });
-            this.currentPageNameDirty = false;
-        }
+
+        this.updates.name.newName = this.currentPage.page_name;
+
+
+        let resp = await httpHelper.submitChanges(this.updates);
+        console.log(resp);
+
+        this.saved = true;
         this.setUpdatesLocally();
+
     }
 
     setUpdatesLocally(){//this function should be accompanied by a sister function that calls backend to set changes.
         // call other function
-        for (let i = 0; i < this.updates.length; i++){
-            let match = this.pages.find((page) => page._id === this.updates[i].page_id);
-            if (this.updates[i].type === "content"){
-                match.content = this.updates[i].newValue;
-            }
-            if (this.updates[i].type === "properties"){
-                match.properties = this.updates[i].newValue;
-            }
-            if (this.updates[i].type === "name"){
-                match.name = this.updates[i].newValue;
-            }
+
+
+        let match = this.pages.find((page) => page._id === this.updates.page_id);
+        if (this.updates.content.dirty){
+            match.content = this.updates.content.changes;
+            this.updates.content.dirty = false;
         }
-        this.updates = [];
-        console.log(this.pages);
+        if (this.updates.properties.dirty){
+            match.properties = this.updates.properties.changes;
+            this.updates.properties.dirty = false;
+        }
+        if (this.updates.name.dirty){
+            match.name = this.updates.name.newName;
+        }
+
     }
 
     getRootPage(){
@@ -93,7 +100,6 @@ class DocumentManager{
 
 
         }
-        console.log(directory);
         return directory;
     }
 
@@ -121,7 +127,8 @@ class DocumentManager{
                 prop.name = newPropertyName;
             }
         });
-        this.currentPagePropsDirty = true;
+        this.updates.properties.dirty = true;
+        this.saved = false;
     }
 
     editPagePropertyValue(id, newPropertyValue){
@@ -130,7 +137,8 @@ class DocumentManager{
                 prop.value = newPropertyValue;
             }
         });
-        this.currentPagePropsDirty = true;
+        this.updates.properties.dirty = true;
+        this.saved = false;
         return null;
     }
 
@@ -148,7 +156,8 @@ class DocumentManager{
         this.currentPage.properties.push({
          type:"text", value:" ", id: uuidv4()
         });
-        this.currentPagePropsDirty = true;
+        this.updates.content.dirty = true;
+        this.saved = false;
     }
 
     addTextContentByID(referralID){
@@ -156,19 +165,21 @@ class DocumentManager{
         this.currentPage.content.splice(index+1, 0,{
             type:"text", value:" ", id: uuidv4()
         } );
-        this.currentPageContentDirty = true;
+        this.updates.content.dirty = true;
+        this.saved = false;
     }
 
     addTextContentByIndex(referralIndex){
         this.currentPage.content.splice(referralIndex+1, 0,{
             type:"text", value:" ", id: uuidv4()
         } );
-        this.currentPageContentDirty = true;
+        this.updates.content.dirty = true;
+        this.saved = false;
     }
 
 
 
-    addNewPageByIndex(referralIndex, parentID){
+    async addNewPageByIndex(referralIndex, parentID){
         let newPageID = uuidv4();
         this.currentPage.content.splice(referralIndex+1, 0,{
             type:"page", value:"New Page", id: uuidv4(), linkedPageID : newPageID
@@ -177,12 +188,15 @@ class DocumentManager{
         this.pages.push({
             _id : newPageID,
             page_name:"New Page",
-            user_id: window.sessionStorage.getItem("user_id"), //need to change
+            user_id: window.sessionStorage.getItem("user_id"),
             content: [{type:"text",value:" ",id:0}],
             parent_id : parentID,
             properties : []
         })
-        this.currentPageContentDirty = true;
+        let res = await httpHelper.addNewPage(parentID, newPageID);
+        console.log(res);
+        this.updates.content.dirty = true;
+        this.saved = false;
     }
 
     addDividerContentByID(referralID){
@@ -190,14 +204,16 @@ class DocumentManager{
         this.currentPage.content.splice(index+1, 0,{
             type:"divider", id: uuidv4()
         } );
-        this.currentPageContentDirty = true;
+        this.updates.content.dirty = true;
+        this.saved = false;
     }
 
     addDividerContentByIndex(referralIndex){
         this.currentPage.content.splice(referralIndex+1, 0,{
             type:"divider", id: uuidv4()
         } );
-        this.currentPageContentDirty = true;
+        this.updates.content.dirty = true;
+        this.saved = false;
     }
 
     addCheckBoxByIndex(referralIndex) {
@@ -209,7 +225,8 @@ class DocumentManager{
             checked: false,
             indent: 0
         } );
-        this.currentPageContentDirty = true;
+        this.updates.content.dirty = true;
+        this.saved = false;
         return nId
     }
 
@@ -232,7 +249,8 @@ class DocumentManager{
 
     updatePageName(newName) {
         this.currentPage.page_name = newName;
-        this.currentPageNameDirty = true;
+        this.updates.name.dirty = true;
+        this.saved = false;
     }
 
     getPage(pageID){
@@ -246,7 +264,8 @@ class DocumentManager{
                 this.currentPage.content[i] = contentObject;
             }
         }
-        this.currentPageContentDirty = true;
+        this.updates.content.dirty = true;
+        this.saved = false;
     }
 
     removeContent(id) {
@@ -256,7 +275,8 @@ class DocumentManager{
             }
         }
         console.log(this.currentPage.content);
-        this.currentPageContentDirty = true;
+        this.updates.content.dirty = true;
+        this.saved = false;
     }
 
     removeProperty(id){
@@ -265,7 +285,8 @@ class DocumentManager{
                 this.currentPage.properties.splice(i, 1);
             }
         }
-        this.currentPagePropsDirty = true;
+        this.updates.properties.dirty = true;
+        this.saved = false;
     }
 
     getContentIndex(id){

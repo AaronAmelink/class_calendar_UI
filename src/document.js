@@ -9,7 +9,8 @@ import DocumentManager from "./managment/documentManager";
 import StackItem from "./ContentComponents/StackItem";
 import PropertiesMenu from "./ContentComponents/PropertiesMenu";
 import PageName from "./ContentComponents/PageName";
-import httpHelper from "./managment/httpHelper";
+const httpHelperClass = require('./managment/httpHelper');
+const httpHelper = new httpHelperClass();
 
 function Document(props) {
 
@@ -17,6 +18,10 @@ function Document(props) {
     const [dataFetched, setDataFetched] = useState(false);
     const [error, setError] = useState(false);
     const [ignored, forceUpdate] = useState(false);
+    const [timeLeft, setTimeLeft] = useState(5);
+
+
+
 
     useEffect(() => {
         fetchPages();
@@ -25,7 +30,7 @@ function Document(props) {
     const fetchPages = async () =>{
 
         const pages = await httpHelper.getPages();
-        console.log(pages);
+        //console.log(pages);
         if (pages === "error fetching"){
             setError(true);
         }
@@ -41,21 +46,12 @@ function Document(props) {
 
     }
 
-    const [currentPage, setPage] = useState(DocumentManager.currentPage);
-
-
-
 
 
     const onPageUpdate = () => { //force a rerender. not BEST practice, but works for the scope of the project
         forceUpdate(!ignored);
     }
 
-    const addContentPerm = () => {
-        if (DocumentManager.currentPage.content.count === 0){
-            DocumentManager.addTextProperty();
-        }
-    }
 
     function removeContent(id){
         DocumentManager.removeContent(id);
