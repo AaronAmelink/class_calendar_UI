@@ -1,5 +1,5 @@
 const {axios} = require('axios');
-
+const url = 'http://classnotes-api.azurewebsites.net';
 class httpHelper{
 
     constructor() {
@@ -7,7 +7,7 @@ class httpHelper{
 
     async getPages(){
         try {
-            const response = (await fetch("http://localhost:5050/api/data/getPages", {
+            const response = (await fetch(url+"/api/data/getPages", {
                 headers: {"Authorization": window.sessionStorage.getItem("authToken")},
             })).json()
             return response;
@@ -20,7 +20,7 @@ class httpHelper{
 
     async addNewPage(referenceID, newID){
         try {
-            const response = await fetch("http://localhost:5050/api/data/addNewPage", {
+            const response = await fetch(url+"/api/data/addNewPage", {
                 method: "POST", // *GET, POST, PUT, DELETE, etc.
                 mode: "cors", // no-cors, *cors, same-origin
                 cache: "default", // *default, no-cache, reload, force-cache, only-if-cached
@@ -40,7 +40,7 @@ class httpHelper{
 
     async submitChanges(updateObj) {
         try {
-            const response = await fetch("http://localhost:5050/api/data/updatePage", {
+            const response = await fetch(url+"/api/data/updatePage", {
                 method: "POST", // *GET, POST, PUT, DELETE, etc.
                 mode: "cors", // no-cors, *cors, same-origin
                 cache: "default", // *default, no-cache, reload, force-cache, only-if-cached
@@ -60,7 +60,7 @@ class httpHelper{
 
     async loginRequest(email, password) {
         try {
-            const response = await fetch("http://localhost:5050/api/user/login", {
+            const response = await fetch(url+"/api/user/login", {
                 method: "POST", // *GET, POST, PUT, DELETE, etc.
                 mode: "cors", // no-cors, *cors, same-origin
                 cache: "default", // *default, no-cache, reload, force-cache, only-if-cached
@@ -80,7 +80,7 @@ class httpHelper{
 
     async registerRequest(userName, email, password){
         try{
-            const response = await fetch("http://localhost:5050/api/user/addUser", {
+            const response = await fetch(url+"/api/user/addUser", {
                 method: "POST", // *GET, POST, PUT, DELETE, etc.
                 mode: "cors", // no-cors, *cors, same-origin
                 cache: "default", // *default, no-cache, reload, force-cache, only-if-cached
