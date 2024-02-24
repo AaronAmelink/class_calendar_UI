@@ -22,7 +22,7 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
 
     - name: tag image
-      run: docker tag classnotes aaronamelink/devwork:classnotes-ui
+      run: docker tag classnotes-ui aaronamelink/devwork:classnotes-ui
 
     - name: push image
       run: docker push aaronamelink/devwork:classnotes-ui
