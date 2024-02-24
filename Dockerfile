@@ -16,9 +16,19 @@ COPY --chown=node:node ./package-lock.json ./package-lock.json
 USER node
 RUN npm install --loglevel warn --production
 
+FROM base AS builder-client
+WORKDIR /home/node/app
+COPY --chown=node:node . ./
+USER node
+RUN npm install --loglevel warn
+RUN npm run build
+EXPOSE ${PORT_NUMBER}
+CMD ["npm", "start"]
+
 FROM base AS production
 WORKDIR /home/node/app
 USER node
+COPY --chown=node:node --from=builder-client /home/node/app/build ./build/
 COPY --chown=node:node --from=builder-server /home/node/app/node_modules ./node_modules
 COPY --chown=node:node ./package.json ./package.json
 COPY --chown=node:node ./package-lock.json ./package-lock.json
