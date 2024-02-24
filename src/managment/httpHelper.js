@@ -1,5 +1,5 @@
 const {axios} = require('axios');
-const url = 'http://classnotes-api.azurewebsites.net';
+const url = 'https://classnotes-api.azurewebsites.net';
 class httpHelper{
 
     constructor() {
