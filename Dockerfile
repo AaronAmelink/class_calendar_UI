@@ -7,11 +7,21 @@ ARG PORT_NUMBER
 
 ENV PORT ${PORT_NUMBER}
 
+
+FROM base AS builder-server
+WORKDIR /home/node/app
+RUN apk add --no-cache --virtual .build-deps git make g++
+COPY --chown=node:node ./package.json ./package.json
+COPY --chown=node:node ./package-lock.json ./package-lock.json
 USER node
-COPY --chown=node:node --from=builder-client /home/node/app/build ./build/
+RUN npm install --loglevel warn --production
+
+FROM base AS production
+WORKDIR /home/node/app
+USER node
 COPY --chown=node:node --from=builder-server /home/node/app/node_modules ./node_modules
 COPY --chown=node:node ./package.json ./package.json
 COPY --chown=node:node ./package-lock.json ./package-lock.json
 COPY --chown=node:node ./public ./public
-EXPOSE ${PORT_NUMBER}
+EXPOSE 3000
 CMD ["npm", "run", "server"]
