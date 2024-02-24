@@ -23,5 +23,5 @@ COPY --chown=node:node --from=builder-server /home/node/app/node_modules ./node_
 COPY --chown=node:node ./package.json ./package.json
 COPY --chown=node:node ./package-lock.json ./package-lock.json
 COPY --chown=node:node ./public ./public
-EXPOSE 3000
+EXPOSE ${PORT_NUMBER}
 CMD ["npm", "run", "server"]
