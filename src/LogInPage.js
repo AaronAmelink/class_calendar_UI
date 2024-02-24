@@ -54,6 +54,18 @@ function LogInPage(props){
                 if (res.error && res.error === "email taken"){
                     setEmailTaken(true);
                 }
+                else{
+                    const loginSig = await httpHelper.loginRequest(email, password);
+                    if (loginSig.auth === true){
+                        props.setLoggedin(true);
+                        window.sessionStorage.setItem("authToken", 'Bearer ' + loginSig.signature);
+                        window.sessionStorage.setItem("user_id", loginSig.userProfile._id);
+                    }
+                    else{
+                        props.setLoggedin(false);
+                        console.log("user registered, but could not complete login");
+                    }
+                }
 
             }
         }

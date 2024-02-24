@@ -31,7 +31,7 @@ function Document(props) {
 
         const pages = await httpHelper.getPages();
         //console.log(pages);
-        if (pages === "error fetching"){
+        if (pages === []){
             setError(true);
         }
         else{
@@ -41,8 +41,9 @@ function Document(props) {
             if (DocumentManager.currentPage.content.length === 0){
                 //DocumentManager.addTextContent();
             }
+            setDataFetched(true);
         }
-        setDataFetched(true);
+
 
     }
 

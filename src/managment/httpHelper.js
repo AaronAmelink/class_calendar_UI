@@ -14,7 +14,7 @@ class httpHelper{
         }
         catch (e){
             console.log(e);
-            return ("error fetching");
+            return ([]);
         }
     }
 
