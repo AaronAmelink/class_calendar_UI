@@ -1,27 +1,27 @@
-const { v4: uuidv4 } = require('uuid');
-const httpHelperClass = require('./httpHelper');
-const httpHelper = new httpHelperClass();
+import httpHelper from './httpHelper';
 
+const { v4: uuidv4 } = require('uuid');
+const stateManager = require('./stateManager');
 class DocumentManager{
     constructor() {
         if (!DocumentManager.instance) {
             DocumentManager.instance = this;
             this.pages = [];
-            this.saved = false;
+            this.selectedContentID = null;
             this.currentPage = {};
             this.updates={
-                "page_id" : null,
-                "content" : {
-                    "dirty" : false,
-                    "changes" : null //would be an array if changes :D
+                page_id : null,
+                content : {
+                    dirty : false,
+                    changes : null //would be an array if changes :D
                 },
-                "properties" : {
-                    "dirty" : false,
-                    "changes" : null,
+                properties : {
+                    dirty : false,
+                    changes : null,
                 },
-                "name" : {
-                    "dirty" : false,
-                    "newName" : null
+                name : {
+                    dirty : false,
+                    newName : null
                 }
             }
 
@@ -34,6 +34,7 @@ class DocumentManager{
     //every minute or so updates should be sent to backend
     //backend will parse through and update accordingly
     async maintainChanges() {//should be called whenever changes should be saved. ie. page change or roughly every 3 seconds
+        console.log(this.updates);
         this.updates.page_id = this.currentPage._id;
         if (this.updates.content.dirty) {
             this.updates.content.changes = this.currentPage.content;
@@ -45,26 +46,33 @@ class DocumentManager{
         this.updates.name.newName = this.currentPage.page_name;
 
 
-        let resp = await httpHelper.submitChanges(this.updates);
-        console.log(resp);
-
-        this.saved = true;
-        this.setUpdatesLocally();
-
+        if (this.updates.content.dirty || this.updates.properties.dirty || this.updates.name.dirty){
+            let res = await httpHelper.submitChanges(this.updates);
+            console.log(res);
+            stateManager.saved = true;
+            this.setUpdatesLocally();
+        }
+        Object.values(this.updates).forEach((update) => {
+            if (update.dirty){
+                update.dirty = false;
+            }
+            if (update.changes){
+                update.changes = null;
+            }
+        });
     }
 
     setUpdatesLocally(){//this function should be accompanied by a sister function that calls backend to set changes.
-        // call other function
 
 
         let match = this.pages.find((page) => page._id === this.updates.page_id);
         if (this.updates.content.dirty){
             match.content = this.updates.content.changes;
-            this.updates.content.dirty = false;
+            //this.updates.content.dirty = false;
         }
         if (this.updates.properties.dirty){
             match.properties = this.updates.properties.changes;
-            this.updates.properties.dirty = false;
+            //this.updates.properties.dirty = false;
         }
         if (this.updates.name.dirty){
             match.name = this.updates.name.newName;
@@ -74,7 +82,7 @@ class DocumentManager{
 
     getRootPage(){
         for (let i = 0; i < this.pages.length; i++){
-            if (this.pages[i].parent_id === "null"){
+            if (this.pages[i]?.parent_id === "null"){
                 return this.pages[i];
             }
         }
@@ -128,7 +136,7 @@ class DocumentManager{
             }
         });
         this.updates.properties.dirty = true;
-        this.saved = false;
+        stateManager.saved = false;
     }
 
     editPagePropertyValue(id, newPropertyValue){
@@ -138,7 +146,7 @@ class DocumentManager{
             }
         });
         this.updates.properties.dirty = true;
-        this.saved = false;
+        stateManager.saved = false;
         return null;
     }
 
@@ -157,7 +165,11 @@ class DocumentManager{
          type:"text", value:" ", id: uuidv4()
         });
         this.updates.content.dirty = true;
-        this.saved = false;
+        stateManager.saved = false;
+    }
+
+    getSelectedContentID(){
+        return this.selectedContentID;
     }
 
     addTextContentByID(referralID){
@@ -166,7 +178,7 @@ class DocumentManager{
             type:"text", value:" ", id: uuidv4()
         } );
         this.updates.content.dirty = true;
-        this.saved = false;
+        stateManager.saved = false;
     }
 
     addTextContentByIndex(referralIndex){
@@ -174,7 +186,7 @@ class DocumentManager{
             type:"text", value:" ", id: uuidv4()
         } );
         this.updates.content.dirty = true;
-        this.saved = false;
+        stateManager.saved = false;
     }
 
 
@@ -196,7 +208,7 @@ class DocumentManager{
         let res = await httpHelper.addNewPage(parentID, newPageID);
         console.log(res);
         this.updates.content.dirty = true;
-        this.saved = false;
+        stateManager.saved = false;
     }
 
     addDividerContentByID(referralID){
@@ -205,7 +217,7 @@ class DocumentManager{
             type:"divider", id: uuidv4()
         } );
         this.updates.content.dirty = true;
-        this.saved = false;
+        stateManager.saved = false;
     }
 
     addDividerContentByIndex(referralIndex){
@@ -213,7 +225,7 @@ class DocumentManager{
             type:"divider", id: uuidv4()
         } );
         this.updates.content.dirty = true;
-        this.saved = false;
+        stateManager.saved = false;
     }
 
     addCheckBoxByIndex(referralIndex) {
@@ -226,7 +238,8 @@ class DocumentManager{
             indent: 0
         } );
         this.updates.content.dirty = true;
-        this.saved = false;
+        stateManager.saved = false;
+        this.insertedContentID = nId;
         return nId
     }
 
@@ -236,21 +249,14 @@ class DocumentManager{
     }
 
     getPageName(pageID){
-        let value;
-        this.pages.forEach((page) => {
-            if (page._id === pageID){
-
-                value = page.page_name;
-            }
-        })
-
-        return value;
+        console.log(this.pages);
+        return this.pages.find(page => page._id === pageID)?.page_name;
     }
 
     updatePageName(newName) {
         this.currentPage.page_name = newName;
         this.updates.name.dirty = true;
-        this.saved = false;
+        stateManager.saved = false;
     }
 
     getPage(pageID){
@@ -265,7 +271,7 @@ class DocumentManager{
             }
         }
         this.updates.content.dirty = true;
-        this.saved = false;
+        stateManager.saved = false;
     }
 
     removeContent(id) {
@@ -276,7 +282,7 @@ class DocumentManager{
         }
         console.log(this.currentPage.content);
         this.updates.content.dirty = true;
-        this.saved = false;
+        stateManager.saved = false;
     }
 
     removeProperty(id){
@@ -286,7 +292,7 @@ class DocumentManager{
             }
         }
         this.updates.properties.dirty = true;
-        this.saved = false;
+        stateManager.saved = false;
     }
 
     getContentIndex(id){
@@ -313,4 +319,4 @@ class DocumentManager{
 }
 
 const instance = new DocumentManager();
-module.exports = instance;
+export default instance;

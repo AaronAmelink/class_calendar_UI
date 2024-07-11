@@ -1,7 +1,8 @@
-import {Grid, TextField, useTheme} from "@mui/material";
+import {Grid, TextField} from "@mui/material";
 import DocumentManager from "../../managment/documentManager";
-import {useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import Checkbox from '@mui/material/Checkbox';
+import documentManager from "../../managment/documentManager";
 export default function CheckboxStackItem(props) {
     const id = props.id;
     const index = props.index;
@@ -9,8 +10,7 @@ export default function CheckboxStackItem(props) {
     const [checked, setChecked] = useState(DocumentManager.currentPage.content[index].checked);
     const [indent, setIndent] = useState(DocumentManager.currentPage.content[index].indent)
     const [shiftDown, setShiftDown] = useState(false);
-
-
+    const [autoFocus, setAutoFocus] = useState(documentManager.getSelectedContentID() === id);
     const handleTextChange = (newValue) =>{
         setText(newValue);
         DocumentManager.updateContent(id, {
@@ -21,13 +21,8 @@ export default function CheckboxStackItem(props) {
             indent : indent
         })
     }
-    const moveCaretAtEnd = (e) => {
-        var temp_value = e.target.value
-        e.target.value = ''
-        e.target.value = temp_value
-    }
 
-    const handleCheckChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleCheckChange = (event) => {
 
         setChecked(event.target.checked);
 
@@ -65,6 +60,7 @@ export default function CheckboxStackItem(props) {
                 indent : indent
             })
             props.onPageUpdate();
+            DocumentManager.selectedContentID = insertedID;
         }
 
         if (e.key === "Tab" && DocumentManager.currentPage.content[index].indent < 6 && DocumentManager.currentPage.content[index].indent >= 0){
@@ -91,6 +87,10 @@ export default function CheckboxStackItem(props) {
         }
     }
 
+    const handleClick = () => {
+        DocumentManager.selectedContentID = id;
+    }
+
     return(
         <Grid container spacing={0} wrap='nowrap'>
             <Grid item xs="0.3" sx={{ml:10*(indent)}}>
@@ -108,8 +108,8 @@ export default function CheckboxStackItem(props) {
             </Grid>
             <Grid item sx={{mt: 0.5, ml:1}} xs="11">
                 <TextField
+                    autoFocus={autoFocus}
                     id={id}
-                    autoFocus={props.focused}
                     variant={"standard"}
                     InputProps={{disableUnderline: true, style : {color: "#989898"}}}
                     sx={{ input: { color: 'text.main' }, width: '100%', textOverflow: 'clip' }}
@@ -117,6 +117,7 @@ export default function CheckboxStackItem(props) {
 
                     onKeyDown={handleKeyDown}
                     onKeyUp={handleKeyUp}
+                    onClick={handleClick}
 
                     value={text}
                 />

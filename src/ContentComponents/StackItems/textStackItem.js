@@ -1,5 +1,4 @@
-import Stack from "@mui/material/Stack";
-import {TextField, useTheme} from "@mui/material";
+import {TextField} from "@mui/material";
 import DocumentManager from "../../managment/documentManager";
 import {useState} from "react";
 
@@ -7,14 +6,10 @@ export default function TextStackItem(props) {
     const id = props.id;
     const index = props.index;
     const [text, setText] = useState(DocumentManager.currentPage.content[index].value);
-    const theme = useTheme();
-    const [focused, setFocused] = useState(false);
+    const [focused, setFocused] = useState(DocumentManager.getSelectedContentID() === id);
     const handleFocusEnter = (e) => {
         moveCaretAtEnd(e)
-        setFocused(true);
-    }
-    const handleFocusExit = () => {
-        setFocused(false);
+        DocumentManager.selectedContentID = id;
     }
 
 
@@ -43,11 +38,7 @@ export default function TextStackItem(props) {
 
     return(
         <TextField
-            onFocus={handleFocusEnter}
-            onBlur={handleFocusExit}
-            id={id}
-            autoFocus={props.focused}
-            onFocus={moveCaretAtEnd}
+            id={id.toString()}
             multiline
             variant={"standard"}
             InputProps={{disableUnderline: true, style : {color: "#989898"}}}
@@ -55,6 +46,8 @@ export default function TextStackItem(props) {
             onChange={ e=>handleChange(e.target.value)}
             onKeyDown={handleKeyDown}
             value={text}
+            autoFocus={focused}
+            onClick={handleFocusEnter}
         />
     );
 }

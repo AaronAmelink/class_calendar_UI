@@ -3,22 +3,15 @@ import {
     Avatar,
     Button,
     CssBaseline,
-    FormControlLabel,
     Grid,
-    Icon,
-    Paper,
-    styled,
     TextField,
     ThemeProvider,
-    Typography
 } from "@mui/material";
 import allThemes from "./theme";
 import Box from "@mui/material/Box";
 import PersonIcon from '@mui/icons-material/Person';
-import DocumentManager from "./managment/documentManager";
 import Container from "@mui/material/Container";
-const httpHelperClass = require('./managment/httpHelper');
-const httpHelper = new httpHelperClass();
+import httpHelper from './managment/httpHelper';
 function LogInPage(props){
     const [displayPswrdNotMatching, setDisplayPswrdNotMatching] = useState();
     const [loggingIn, setLoggingIn] = useState(true);
@@ -51,12 +44,12 @@ function LogInPage(props){
                 setDisplayPswrdNotMatching(false);
                 const res = await httpHelper.registerRequest(userName, email, password);
                 console.log(res);
-                if (res.error && res.error === "email taken"){
+                if (res?.error === "email taken"){
                     setEmailTaken(true);
                 }
                 else{
                     const loginSig = await httpHelper.loginRequest(email, password);
-                    if (loginSig.auth === true){
+                    if (loginSig?.auth === true){
                         props.setLoggedin(true);
                         window.sessionStorage.setItem("authToken", 'Bearer ' + loginSig.signature);
                         window.sessionStorage.setItem("user_id", loginSig.userProfile._id);
@@ -71,14 +64,13 @@ function LogInPage(props){
         }
         else{
             const res = await httpHelper.loginRequest(email, password);
-            if (res.auth === true){
+            if (res?.auth === true){
                 console.log("logged in");
                 window.sessionStorage.setItem("authToken", 'Bearer ' + res.signature);
                 window.sessionStorage.setItem("user_id", res.userProfile._id);
                 props.setLoggedin(true);
             }
-            if (res.auth === false){
-                console.log("incorrect email/password");
+            if (res?.auth === false){
                 setWrongPassword(true);
             }
         }
@@ -97,12 +89,13 @@ function LogInPage(props){
                         name="password"
                         type="password"
                         autoComplete="current-password"
+                        aria-label="password"
                         onSubmit={handleSubmit}
                         sx={{ input: { color: 'text.main' }, width: '100%', textOverflow: 'clip' }}
                         color={'secondary'}
                     />
                     {wrongPassword &&
-                        <h2>Wrong password</h2>
+                        <h3>Incorrect Email / Password</h3>
                     }
                 </div>
 

@@ -2,15 +2,12 @@ import {useEffect, useState} from "react";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import * as React from "react";
-import {Button, Divider, Grid, Typography} from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
+import Typography from "@mui/material/Typography";
+import Grid from "@mui/material/Unstable_Grid2"
 import IconButton from "@mui/material/IconButton";
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import AddIcon from '@mui/icons-material/Add';
-import {TypeSpecimen} from "@mui/icons-material";
 import Stack from "@mui/material/Stack";
 import DocumentManager from "../managment/documentManager";
-import TextValue from "./PropertiesComponents/TextValue";
 import Property from "./PropertiesComponents/Property";
 import AddPropertyMenu from "./PropertiesComponents/AddPropertyMenu";
 
@@ -36,7 +33,7 @@ export default function PropertiesMenu(props) {
         SetProperties([...DocumentManager.getCurrentPageProperties()]);
     }
 
-    const handleMenuClick = (event: MouseEvent) =>{
+    const handleMenuClick = (event) =>{
         if (menuVisible){
             handleMenuClose(event);
         }
@@ -44,18 +41,18 @@ export default function PropertiesMenu(props) {
             handleMenuOpen(event);
         }
     }
-    const handleMenuClose= (event : React.MouseEvent) => {
+    const handleMenuClose= (event) => {
         setMenuVisible(false);
         setAnchorEl(null);
     }
 
-    const handleMenuOpen = (event : React.MouseEvent) => {
+    const handleMenuOpen = (event) => {
         setMenuVisible(true);
         setAnchorEl(event.currentTarget);
     }
 
     return(
-        <Grid item sx={{m:0, minwidth:4/8, mt:2.5}}>
+        <Grid sx={{m:0, minwidth:4/8, mt:2.5}}>
             <IconButton
                 aria-label="menu"
                 onClick={handleMenuClick}
@@ -81,10 +78,10 @@ export default function PropertiesMenu(props) {
 
             >
                 <MenuItem>
-                    <Stack container>
+                    <Stack>
                         {
                             properties.map(prop => {
-                                return (<Property property={prop} removeProperty={removeProperty}/>);
+                                return (<Property property={prop} removeProperty={removeProperty} key={prop?.id}/>);
                             })
                         }
                     </Stack>

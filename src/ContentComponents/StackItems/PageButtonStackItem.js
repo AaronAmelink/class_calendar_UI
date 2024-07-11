@@ -6,10 +6,11 @@ import {useEffect, useState} from "react";
 
 export default function PageButtonStackItem(props) {
     const linkedPageId = props.pageID;
-    let name = DocumentManager.getPageName(linkedPageId);
+    const name = DocumentManager.getPageName(linkedPageId);
     const [pageName, setPageName] = useState(name);
     useEffect(() => {
         setPageName(DocumentManager.getPageName(linkedPageId));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [DocumentManager.getPageName(linkedPageId)]);
 
 

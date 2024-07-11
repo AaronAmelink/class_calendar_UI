@@ -1,12 +1,11 @@
 import Stack from "@mui/material/Stack";
-import {Divider, Grid} from "@mui/material";
+import Divider from "@mui/material/Divider";
+import Grid from "@mui/material/Unstable_Grid2";
 import TextValue from "./TextValue";
 import * as React from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
 import IconButton from "@mui/material/IconButton";
 import NameValue from "./NameValue";
-import {useEffect, useState} from "react";
-import DocumentManager from "../../managment/documentManager";
 
 export default function Property(props){ // props is the referenced for passed down variables. Naming is confusing.
     const type = props.property.type;
@@ -28,18 +27,18 @@ export default function Property(props){ // props is the referenced for passed d
 
     if (props.property.type === "text"){
         return (
-            <Stack item>
+            <Stack>
                 <Grid container spacing={2}>
-                    <Grid item>
+                    <Grid>
                         <Name/>
                     </Grid>
-                    <Grid item>
+                    <Grid>
                         <Divider orientation="vertical" variant="fullWidth" sx={{ bgcolor: "secondary.main" }}/>
                     </Grid>
-                    <Grid item>
+                    <Grid>
                         <Value/>
                     </Grid>
-                    <Grid item>
+                    <Grid>
                         <IconButton aria-label="delete" sx={{color:"text.main", mt:1}} onClick={handleDeleteClick}>
                             <DeleteIcon />
                         </IconButton>

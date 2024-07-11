@@ -5,17 +5,15 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
-import AccountCircle from '@mui/icons-material/AccountCircle';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import {useEffect, useState} from "react";
 import DocumentManager from ".//managment/documentManager";
-import {Grid, useTheme} from "@mui/material";
 import PageButtonStackItem from "./ContentComponents/StackItems/PageButtonStackItem";
 import SaveIcon from "./SaveIcon";
 export default function TopBar(props) {
     const [pageID, setPageID] = useState(props.pageID);
-    const [saved, setSaved] = useState(props.saved);
+    const [, setSaved] = useState(props.saved);
 
     useEffect(() => {
         setPageID(props.pageID);
@@ -29,7 +27,7 @@ export default function TopBar(props) {
 
 
 
-    const handleMenuClick = (event: MouseEvent) =>{
+    const handleMenuClick = (event) =>{
         if (menuIconsVisible){
             handleMenuClose(event);
         }
@@ -38,19 +36,18 @@ export default function TopBar(props) {
         }
     }
 
-    const handleMenuClose= (event : React.MouseEvent) => {
+    const handleMenuClose= (event) => {
         setMenuIconsVisible(false);
         setAnchorEl(null);
     }
 
-    const handleMenuOpen = (event : React.MouseEvent) => {
+    const handleMenuOpen = (event) => {
         setMenuIconsVisible(true);
         setAnchorEl(event.currentTarget);
     }
 
     const [menuIconsVisible, setMenuIconsVisible] = useState(false);
     const [anchorEl, setAnchorEl] = React.useState(null);
-    const theme = useTheme();
 
     return (
         <Box sx={{ flexGrow: 1 }}>
@@ -77,14 +74,14 @@ export default function TopBar(props) {
                             }
 
                         >
-                            <MenuItem sx={{color:"text.main"}}>
+                            <MenuItem sx={{color:"text.main"}} key='root page'>
                                 Root Page
                             </MenuItem>
                         </Menu>
                         <Typography variant="h6" sx={{ml:4, color:"text.main"}} >
                             {
                                 DocumentManager.getDirectoryOfDocument(pageID).map((pageID) => {
-                                    return (<PageButtonStackItem pageID={pageID} onPageUpdate={props.onPageUpdate}/>);
+                                    return (<PageButtonStackItem pageID={pageID} onPageUpdate={props.onPageUpdate} key={pageID}/>);
                                 })
                             }
                         </Typography>

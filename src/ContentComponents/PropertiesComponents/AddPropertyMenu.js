@@ -1,11 +1,10 @@
 import MenuItem from "@mui/material/MenuItem";
-import IconButton from "@mui/material/IconButton";
 import AddIcon from "@mui/icons-material/Add";
-import {Button, Grid, Typography} from "@mui/material";
+import {Grid, Typography} from "@mui/material";
 import * as React from "react";
 import Menu from "@mui/material/Menu";
 import Stack from "@mui/material/Stack";
-import {useId, useState} from "react";
+import {useState} from "react";
 import ShortTextIcon from '@mui/icons-material/ShortText';
 import DocumentManager from '../../managment/documentManager';
 
@@ -20,12 +19,12 @@ export default function AddPropertyMenu(props) {
         DocumentManager.addTextProperty();
         props.updateProperties();
     }
-    const handleMenuClose= (event : React.MouseEvent) => {
+    const handleMenuClose= (event) => {
         setMenuVisible(false);
         setAnchorEl(null);
     }
 
-    const handleMenuOpen = (event : React.MouseEvent) => {
+    const handleMenuOpen = (event) => {
         setMenuVisible(true);
         setAnchorEl(event.currentTarget);
     }
@@ -50,13 +49,13 @@ export default function AddPropertyMenu(props) {
                 }
             >
                 <MenuItem sx={{m:0}}>
-                    <Stack container>
-                        <Stack item aria-label="add text" sx={{color:"text.main", minWidth:"200px"}}>
+                    <Stack>
+                        <Stack aria-label="add text" sx={{color:"text.main", minWidth:"200px"}}>
                             <Grid container onClick={handleTextAddClick}>
-                                <Grid item>
+                                <Grid>
                                     <ShortTextIcon />
                                 </Grid>
-                                <Grid item>
+                                <Grid>
                                     <Typography variant="subtitle1" >
                                         Text Property
                                     </Typography>

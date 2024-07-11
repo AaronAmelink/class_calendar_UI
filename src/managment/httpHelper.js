@@ -1,26 +1,22 @@
-const {axios} = require('axios');
-const url = 'https://classnotes-api.azurewebsites.net';
-class httpHelper{
+const url = 'http://localhost:8080';
 
-    constructor() {
-    }
-
-    async getPages(){
+class HttpHelper {
+    async getPages() {
         try {
-            const response = (await fetch(url+"/api/data/getPages", {
+            // noinspection UnnecessaryLocalVariableJS
+            const response = (await fetch(url + "/api/data/getPages", {
                 headers: {"Authorization": window.sessionStorage.getItem("authToken")},
             })).json()
             return response;
-        }
-        catch (e){
+        } catch (e) {
             console.log(e);
             return ([]);
         }
     }
 
-    async addNewPage(referenceID, newID){
+    async addNewPage(referenceID, newID) {
         try {
-            const response = await fetch(url+"/api/data/addNewPage", {
+            const response = await fetch(url + "/api/data/addNewPage", {
                 method: "POST", // *GET, POST, PUT, DELETE, etc.
                 mode: "cors", // no-cors, *cors, same-origin
                 cache: "default", // *default, no-cache, reload, force-cache, only-if-cached
@@ -29,7 +25,7 @@ class httpHelper{
                     "Authorization": window.sessionStorage.getItem("authToken"),
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({page_name: "New Page", parent_id : referenceID, new_page_id:newID})
+                body: JSON.stringify({page_name: "New Page", parent_id: referenceID, new_page_id: newID})
             })
             return response.json();
         } catch (e) {
@@ -40,7 +36,7 @@ class httpHelper{
 
     async submitChanges(updateObj) {
         try {
-            const response = await fetch(url+"/api/data/updatePage", {
+            const response = await fetch(url + "/api/data/updatePage", {
                 method: "POST", // *GET, POST, PUT, DELETE, etc.
                 mode: "cors", // no-cors, *cors, same-origin
                 cache: "default", // *default, no-cache, reload, force-cache, only-if-cached
@@ -60,7 +56,7 @@ class httpHelper{
 
     async loginRequest(email, password) {
         try {
-            const response = await fetch(url+"/api/user/login", {
+            const response = await fetch(url + "/api/user/login", {
                 method: "POST", // *GET, POST, PUT, DELETE, etc.
                 mode: "cors", // no-cors, *cors, same-origin
                 cache: "default", // *default, no-cache, reload, force-cache, only-if-cached
@@ -69,7 +65,7 @@ class httpHelper{
                     "Content-Type": "application/json",
                     // 'Content-Type': 'application/x-www-form-urlencoded',
                 },
-                body: JSON.stringify({email : email , password: password}), // body data type must match "Content-Type" header
+                body: JSON.stringify({email: email, password: password}), // body data type must match "Content-Type" header
             });
             return response.json();
         } catch (e) {
@@ -78,9 +74,9 @@ class httpHelper{
     }
 
 
-    async registerRequest(userName, email, password){
-        try{
-            const response = await fetch(url+"/api/user/addUser", {
+    async registerRequest(userName, email, password) {
+        try {
+            const response = await fetch(url + "/api/user/addUser", {
                 method: "POST", // *GET, POST, PUT, DELETE, etc.
                 mode: "cors", // no-cors, *cors, same-origin
                 cache: "default", // *default, no-cache, reload, force-cache, only-if-cached
@@ -89,18 +85,18 @@ class httpHelper{
                     "Content-Type": "application/json",
                     // 'Content-Type': 'application/x-www-form-urlencoded',
                 },
-                body: JSON.stringify({email : email , password: password, userName}), // body data type must match "Content-Type" header
+                body: JSON.stringify({email: email, password: password, userName}), // body data type must match "Content-Type" header
             });
             return response.json();
-        }
-        catch (e){
+        } catch (e) {
             console.log(e);
         }
     }
-
-
-
-
 }
 
-module.exports = httpHelper;
+
+const httpHelper = new HttpHelper();
+export default httpHelper;
+
+
+

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
-
 import DocumentManager from './managment/documentManager';
+import stateManager from './managment/stateManager';
 import {useEffect, useState} from "react";
 import CachedIcon from '@mui/icons-material/Cached';
 import CheckIcon from '@mui/icons-material/Check';
@@ -9,12 +9,11 @@ export default function SaveIcon(props) {
     const [saved, setSaved] = useState(true);
     const [counter, setCounter] = useState(5);
 
-    useEffect(() => {
-        setSaved(DocumentManager.saved);
-        if(counter===0){
-            console.log("TIME LEFT IS 0");
+    useEffect( () => {
+        setSaved(stateManager.saved);
+        if (counter === 0) {
             setCounter(5);
-            if (!saved){
+            if (!saved) {
                 DocumentManager.maintainChanges();
             }
         }
