@@ -1,68 +1,58 @@
-import {Grid, Typography} from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import PageName from "../ContentComponents/PageName";
 import DocumentManager from "../managment/documentManager";
 import PropertiesMenu from "../ContentComponents/PropertiesMenu";
 import Stack from "@mui/material/Stack";
 import StackItem from "../ContentComponents/StackItem";
 import {useEffect, useState} from "react";
-import httpHelper from "../managment/httpHelper";
-
+import { useLoaderData } from "react-router-dom";
+import { setLoaded } from '../slices/pageDataSlice'
+import { useDispatch, useSelector } from 'react-redux';
 
 export default function DocumentPage(props) {
+    const dataLoaded = useSelector((state) => state.pageData.loaded);
+    const dispatch = useDispatch();
+    const data = useLoaderData();
+    const [ignored, forceUpdate] = useState(false);
 
-    const [dataFetched, setDataFetched] = useState(false);
-    const [, setError] = useState(false);
+    useEffect(() => {
+        if (data) {
+            console.log(data);
+            dispatch(setLoaded(true));
+        }
+    }, [data]);
 
     function removeContent(id){
         DocumentManager.removeContent(id);
-        props.onPageUpdate();
+        onPageUpdate();
+    }
+    const onPageUpdate = () => { //force a rerender. not BEST practice, but works for the scope of the project
+        forceUpdate(!ignored);
     }
 
-    async function fetchPages(){
-
-        const pages = await httpHelper.getPages();
-        //console.log(pages);
-        if (pages.length === 0){
-            setError(true);
-        }
-        else{
-            DocumentManager.loadPages(pages);
-            DocumentManager.setCurrentPage(pages[0]._id);
-
-            if (DocumentManager.currentPage.content.length === 0){
-                //DocumentManager.addTextContent();
-            }
-            setDataFetched(true);
-        }
-
-
-    }
-    useEffect(async () => {
-        await fetchPages();
-    }, []);
 
     let index = -1;
     return (
     <div>
         {
-            dataFetched ?
+            data ?
             (
                 <div>
                     <Grid container spacing={2}>
                         <Grid item xs={10}>
                             <Typography variant="h4" gutterBottom sx={{color:"text.secondary", m:3}}>
-                                <PageName pageID={DocumentManager.currentPage._id}/>
+                                <PageName pageID={data._id}/>
                             </Typography>
                         </Grid>
                         <Grid item>
-                            <PropertiesMenu pageID={DocumentManager.currentPage._id}/>
+                            <PropertiesMenu pageID={data._id}/>
                         </Grid>
                     </Grid>
                     <Stack spacing={0} sx={{ml:3, mt:3}}>
                         {
-                            DocumentManager.currentPage?.content?.map(entry => {
+                            data?.content?.map(entry => {
                                 index += 1;
-                                return(<StackItem object={entry} onPageUpdate={props.onPageUpdate} id={entry.id} removeContent={removeContent} index={index} key={entry.id}/>);
+                                return(<StackItem object={entry} onPageUpdate={onPageUpdate} id={entry.id} removeContent={removeContent} index={index} key={entry.id}/>);
                             })
                         }
                     </Stack>

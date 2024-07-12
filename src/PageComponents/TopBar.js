@@ -8,13 +8,14 @@ import MenuIcon from '@mui/icons-material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import {useEffect, useState} from "react";
-import DocumentManager from ".//managment/documentManager";
-import PageButtonStackItem from "./ContentComponents/StackItems/PageButtonStackItem";
+import DocumentManager from "../managment/documentManager";
+import PageButtonStackItem from "../ContentComponents/StackItems/PageButtonStackItem";
 import SaveIcon from "./SaveIcon";
+import {Breadcrumbs} from "@mui/material";
+import TopBarDirectory from "../ContentComponents/TopBarDirectory";
 export default function TopBar(props) {
     const [pageID, setPageID] = useState(props.pageID);
     const [, setSaved] = useState(props.saved);
-
     useEffect(() => {
         setPageID(props.pageID);
     }, [props.pageID]);
@@ -50,7 +51,7 @@ export default function TopBar(props) {
     const [anchorEl, setAnchorEl] = React.useState(null);
 
     return (
-        <Box sx={{ flexGrow: 1 }}>
+        <Box sx={{ flexGrow: 1, mt:0.5 }}>
             <AppBar position="static" sx={{maxHeight:40}}>
                 <Toolbar sx={{mt:-1.5}}>
                     <Box display='flex' flexGrow={1}>
@@ -79,11 +80,7 @@ export default function TopBar(props) {
                             </MenuItem>
                         </Menu>
                         <Typography variant="h6" sx={{ml:4, color:"text.main"}} >
-                            {
-                                DocumentManager.getDirectoryOfDocument(pageID).map((pageID) => {
-                                    return (<PageButtonStackItem pageID={pageID} onPageUpdate={props.onPageUpdate} key={pageID}/>);
-                                })
-                            }
+                            <TopBarDirectory pageID={props.pageID}/>
                         </Typography>
                     </Box>
                     <SaveIcon/>

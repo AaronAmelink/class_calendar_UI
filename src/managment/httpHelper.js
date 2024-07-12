@@ -14,6 +14,44 @@ class HttpHelper {
         }
     }
 
+    async getChildPages(parentID) {
+        try {
+            // noinspection UnnecessaryLocalVariableJS
+            const response = (await fetch(url + "/api/data/getChildPages", {
+                method: "POST", // *GET, POST, PUT, DELETE, etc.
+                mode: "cors", // no-cors, *cors, same-origin
+                cache: "default", // *default, no-cache, reload, force-cache, only-if-cached
+                credentials: "same-origin", // include, *same-origin, omit
+                headers: {
+                    "Authorization": window.sessionStorage.getItem("authToken"),
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ parent_id: parentID })
+            })).json();
+            return response;
+        } catch (e) {
+            console.log(e);
+            return ([]);
+        }
+    }
+
+    async getPage(pageID) {
+        try {
+            // noinspection UnnecessaryLocalVariableJS
+            const response = (await fetch(url + `/api/data/getPage/${pageID}`, {
+                headers: {
+                    "Authorization": window.sessionStorage.getItem("authToken"),
+                }
+            })).json()
+            return response;
+        } catch (e) {
+            console.log(e);
+            return ({});
+        }
+    }
+
+
+
     async addNewPage(referenceID, newID) {
         try {
             const response = await fetch(url + "/api/data/addNewPage", {

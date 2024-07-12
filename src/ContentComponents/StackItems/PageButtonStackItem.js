@@ -1,24 +1,22 @@
-import Divider from '@mui/material/Divider';
 import DocumentManager from "../../managment/documentManager";
 import * as React from 'react';
 import {Button} from "@mui/material";
+import {useNavigate} from "react-router-dom";
+import {useSelector} from "react-redux";
 import {useEffect, useState} from "react";
 
 export default function PageButtonStackItem(props) {
     const linkedPageId = props.pageID;
-    const name = DocumentManager.getPageName(linkedPageId);
-    const [pageName, setPageName] = useState(name);
+    const navigate = useNavigate();
+    const dataLoaded = useSelector((state) => state.pageData.loaded);
+    const [pageName, setPageName] = useState('loading');
     useEffect(() => {
-        setPageName(DocumentManager.getPageName(linkedPageId));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [DocumentManager.getPageName(linkedPageId)]);
-
-
-
-    const handleClick = () => {
-        DocumentManager.maintainChanges();
-        DocumentManager.setCurrentPage(linkedPageId);
-        props.onPageUpdate();
+        if (dataLoaded) {
+            setPageName(linkedPageId === DocumentManager.currentPage._id ? DocumentManager.currentPage.page_name : DocumentManager.pages[linkedPageId].page_name);
+        }
+    }, [dataLoaded]);
+    const handleClick = async () => {
+        navigate(`/page/${linkedPageId}`)
     }
 
 

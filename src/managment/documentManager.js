@@ -1,14 +1,18 @@
 import httpHelper from './httpHelper';
-
 const { v4: uuidv4 } = require('uuid');
-const stateManager = require('./stateManager');
+/*
+HUGE NOTE
+Singleton classes are NOT a good idea in react. They mess with the reactivity and all that. However, for this use case, it makes it alot easier to handle
+document transitions and such.
+Never ever read from currentPage as it gets actively updated (so that it can be put back into a read-only state later) NON transactional
+*/
 class DocumentManager{
     constructor() {
         if (!DocumentManager.instance) {
             DocumentManager.instance = this;
-            this.pages = [];
+            this.pages = {};// {pageID: page, pageID: page}
             this.selectedContentID = null;
-            this.currentPage = {};
+            this.currentPage = null;
             this.updates={
                 page_id : null,
                 content : {
@@ -29,10 +33,35 @@ class DocumentManager{
         return DocumentManager.instance;
     }
 
-    //Need to find a way to effectivly update backend.
-    //this.updates is current way of doing that
-    //every minute or so updates should be sent to backend
-    //backend will parse through and update accordingly
+    async changePage(pageID){
+        if (this.currentPage?._id === pageID) return this.currentPage;
+        if (this.currentPage) {
+            await this.maintainChanges();
+            this.pages[this.currentPage._id] = this.currentPage;
+        }
+        this.currentPage = await this.getPage(pageID);
+        return this.currentPage;
+    }
+
+    async getPage(pageID){
+        let newPage = this.pages[pageID];
+        if (!newPage) {
+            newPage = await httpHelper.getPage(pageID);
+            if (!newPage) return null;
+        }
+       for (const content of newPage.content) {
+           if (content.type === "page") {
+               let linkedPage = this.pages[content.linkedPageID];
+               if (!linkedPage) {
+                   let linkedPage = await httpHelper.getPage(content.linkedPageID);
+                   this.pages[content.linkedPageID] = linkedPage;
+               }
+           }
+       }
+       this.currentPage = newPage;
+       return newPage;
+    }
+
     async maintainChanges() {//should be called whenever changes should be saved. ie. page change or roughly every 3 seconds
         console.log(this.updates);
         this.updates.page_id = this.currentPage._id;
@@ -49,8 +78,6 @@ class DocumentManager{
         if (this.updates.content.dirty || this.updates.properties.dirty || this.updates.name.dirty){
             let res = await httpHelper.submitChanges(this.updates);
             console.log(res);
-            stateManager.saved = true;
-            this.setUpdatesLocally();
         }
         Object.values(this.updates).forEach((update) => {
             if (update.dirty){
@@ -62,63 +89,18 @@ class DocumentManager{
         });
     }
 
-    setUpdatesLocally(){//this function should be accompanied by a sister function that calls backend to set changes.
-
-
-        let match = this.pages.find((page) => page._id === this.updates.page_id);
-        if (this.updates.content.dirty){
-            match.content = this.updates.content.changes;
-            //this.updates.content.dirty = false;
-        }
-        if (this.updates.properties.dirty){
-            match.properties = this.updates.properties.changes;
-            //this.updates.properties.dirty = false;
-        }
-        if (this.updates.name.dirty){
-            match.name = this.updates.name.newName;
-        }
-
-    }
-
-    getRootPage(){
-        for (let i = 0; i < this.pages.length; i++){
-            if (this.pages[i]?.parent_id === "null"){
-                return this.pages[i];
-            }
-        }
-        return ("no page found");
-    }
-
-
-
-    loadPages(pages){
-        this.pages = [];
-        pages.forEach(page => {
-            this.pages.push(page);
-        })
-    }
 
     getDirectoryOfDocument(pageID){
         let directory = [];
         let currentID = pageID;
         while (currentID != null){
-            directory.splice(0,0, currentID);
-            let parent = this.getPage(currentID).parent_id;
+            directory.push(currentID);
+            let parent = this.pages[currentID]?.parent_id;
             currentID = parent;
-
-
         }
         return directory;
     }
 
-    setCurrentPage(newPageID){
-        //this.maintainChanges();
-        this.pages.forEach(page => {
-            if (page._id === newPageID) {
-                this.currentPage = page;
-            }
-        });
-    }
 
     getProperty(id){
         for (let i = 0; i < this.currentPage.properties.length; i++){
@@ -136,7 +118,6 @@ class DocumentManager{
             }
         });
         this.updates.properties.dirty = true;
-        stateManager.saved = false;
     }
 
     editPagePropertyValue(id, newPropertyValue){
@@ -146,7 +127,6 @@ class DocumentManager{
             }
         });
         this.updates.properties.dirty = true;
-        stateManager.saved = false;
         return null;
     }
 
@@ -155,8 +135,7 @@ class DocumentManager{
     }
 
     getPageProperties(id){
-        let match = this.pages.find((page) => page._id === id);
-        return (match.properties);
+        return this.pages[id].properties ? this.pages[id].properties : [];
     }
 
 
@@ -165,7 +144,6 @@ class DocumentManager{
          type:"text", value:" ", id: uuidv4()
         });
         this.updates.content.dirty = true;
-        stateManager.saved = false;
     }
 
     getSelectedContentID(){
@@ -178,7 +156,6 @@ class DocumentManager{
             type:"text", value:" ", id: uuidv4()
         } );
         this.updates.content.dirty = true;
-        stateManager.saved = false;
     }
 
     addTextContentByIndex(referralIndex){
@@ -186,7 +163,6 @@ class DocumentManager{
             type:"text", value:" ", id: uuidv4()
         } );
         this.updates.content.dirty = true;
-        stateManager.saved = false;
     }
 
 
@@ -197,18 +173,17 @@ class DocumentManager{
             type:"page", value:"New Page", id: uuidv4(), linkedPageID : newPageID
         } );
 
-        this.pages.push({
+        this.pages[newPageID] ={
             _id : newPageID,
             page_name:"New Page",
             user_id: window.sessionStorage.getItem("user_id"),
             content: [{type:"text",value:" ",id:0}],
             parent_id : parentID,
             properties : []
-        })
+        };
         let res = await httpHelper.addNewPage(parentID, newPageID);
         console.log(res);
         this.updates.content.dirty = true;
-        stateManager.saved = false;
     }
 
     addDividerContentByID(referralID){
@@ -217,7 +192,6 @@ class DocumentManager{
             type:"divider", id: uuidv4()
         } );
         this.updates.content.dirty = true;
-        stateManager.saved = false;
     }
 
     addDividerContentByIndex(referralIndex){
@@ -225,7 +199,6 @@ class DocumentManager{
             type:"divider", id: uuidv4()
         } );
         this.updates.content.dirty = true;
-        stateManager.saved = false;
     }
 
     addCheckBoxByIndex(referralIndex) {
@@ -233,12 +206,11 @@ class DocumentManager{
         this.currentPage.content.splice(referralIndex+1, 0,{
             type:"checkbox",
             id: nId,
-            value: " ",
+            value: "",
             checked: false,
             indent: 0
         } );
         this.updates.content.dirty = true;
-        stateManager.saved = false;
         this.insertedContentID = nId;
         return nId
     }
@@ -249,19 +221,14 @@ class DocumentManager{
     }
 
     getPageName(pageID){
-        console.log(this.pages);
-        return this.pages.find(page => page._id === pageID)?.page_name;
+        return this.pages[pageID]?.page_name;
     }
 
     updatePageName(newName) {
         this.currentPage.page_name = newName;
         this.updates.name.dirty = true;
-        stateManager.saved = false;
     }
 
-    getPage(pageID){
-        return this.pages.find((page) => page._id === pageID);
-    }
 
     updateContent(id, contentObject){
         for (let i = 0; i<this.currentPage.content.length; i++){
@@ -271,7 +238,6 @@ class DocumentManager{
             }
         }
         this.updates.content.dirty = true;
-        stateManager.saved = false;
     }
 
     removeContent(id) {
@@ -282,7 +248,6 @@ class DocumentManager{
         }
         console.log(this.currentPage.content);
         this.updates.content.dirty = true;
-        stateManager.saved = false;
     }
 
     removeProperty(id){
@@ -292,7 +257,6 @@ class DocumentManager{
             }
         }
         this.updates.properties.dirty = true;
-        stateManager.saved = false;
     }
 
     getContentIndex(id){

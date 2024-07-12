@@ -1,20 +1,22 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
-import DocumentManager from './managment/documentManager';
-import stateManager from './managment/stateManager';
+import DocumentManager from '../managment/documentManager';
 import {useEffect, useState} from "react";
 import CachedIcon from '@mui/icons-material/Cached';
 import CheckIcon from '@mui/icons-material/Check';
+import {useDispatch, useSelector} from "react-redux";
+import {setSaved} from "../slices/pageDataSlice";
 export default function SaveIcon(props) {
-    const [saved, setSaved] = useState(true);
+    const saved = useSelector((state) => state.pageData.saved);
+    const dispatch = useDispatch();
     const [counter, setCounter] = useState(5);
 
     useEffect( () => {
-        setSaved(stateManager.saved);
         if (counter === 0) {
             setCounter(5);
             if (!saved) {
                 DocumentManager.maintainChanges();
+                dispatch(setSaved(true));
             }
         }
 

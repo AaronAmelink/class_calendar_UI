@@ -23,9 +23,7 @@ export default function CheckboxStackItem(props) {
     }
 
     const handleCheckChange = (event) => {
-
         setChecked(event.target.checked);
-
         DocumentManager.updateContent(id, {
             value : text,
             id :id,
@@ -33,7 +31,6 @@ export default function CheckboxStackItem(props) {
             checked : event.target.checked,
             indent : indent
         });
-
         console.log(DocumentManager.currentPage.content[index]);
     };
 
@@ -93,7 +90,7 @@ export default function CheckboxStackItem(props) {
 
     return(
         <Grid container spacing={0} wrap='nowrap'>
-            <Grid item xs="0.3" sx={{ml:10*(indent)}}>
+            <Grid item xs="0.3" sx={{ml:10*(indent), mr:1}}>
                 <Checkbox
                     onKeyDown={handleKeyDown}
                     checked={checked}

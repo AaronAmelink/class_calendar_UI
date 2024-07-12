@@ -7,17 +7,18 @@ import {
     TextField,
     ThemeProvider,
 } from "@mui/material";
-import allThemes from "./theme";
+import allThemes from "../theme";
 import Box from "@mui/material/Box";
 import PersonIcon from '@mui/icons-material/Person';
 import Container from "@mui/material/Container";
-import httpHelper from './managment/httpHelper';
+import httpHelper from '../managment/httpHelper';
+import {useNavigate} from "react-router-dom";
 function LogInPage(props){
     const [displayPswrdNotMatching, setDisplayPswrdNotMatching] = useState();
     const [loggingIn, setLoggingIn] = useState(true);
     const [emailTaken, setEmailTaken] = useState(false);
     const [wrongPassword, setWrongPassword] = useState(false);
-
+    const navigate = useNavigate();
 
     async function handleSubmit(event) {
         event.preventDefault();
@@ -69,6 +70,7 @@ function LogInPage(props){
                 window.sessionStorage.setItem("authToken", 'Bearer ' + res.signature);
                 window.sessionStorage.setItem("user_id", res.userProfile._id);
                 props.setLoggedin(true);
+                navigate('/page/7e1f8abc-a768-4e7e-942d-6d5cb8548fdc');
             }
             if (res?.auth === false){
                 setWrongPassword(true);
