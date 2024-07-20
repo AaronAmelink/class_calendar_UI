@@ -11,33 +11,38 @@ import DocumentManager from "../managment/documentManager";
 import HorizontalRuleIcon from '@mui/icons-material/HorizontalRule';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import ArticleIcon from '@mui/icons-material/Article';
+import {useDispatch} from "react-redux";
+import {setSaved} from "../slices/pageDataSlice";
 
 export default function AddContentMenu(props) {
 
     const [menuVisible, setMenuVisible] = useState(false);
     const [anchorEl, setAnchorEl] = React.useState(null);
-
+    const dispatch = useDispatch();
 
     const handleTextAddClick = ()=> {
         DocumentManager.addTextContentByIndex(props.index);
         props.onPageUpdate();
-
+        dispatch(setSaved(false));
 
     }
 
     const handleDivAddClick = () => {
         DocumentManager.addDividerContentByIndex(props.index);
         props.onPageUpdate();
+        dispatch(setSaved(false));
     }
 
     const handleCheckBoxAddClick = () => {
         DocumentManager.addCheckBoxByIndex(props.index);
         props.onPageUpdate();
+        dispatch(setSaved(false));
     }
 
     const handlePageAddClick = () => {
         DocumentManager.addNewPageByIndex(props.index, DocumentManager.currentPage._id);
         props.onPageUpdate();
+        dispatch(setSaved(false));
     }
 
     const handleMenuClick = (event: MouseEvent) =>{
@@ -59,7 +64,7 @@ export default function AddContentMenu(props) {
     }
 
     return(
-        <IconButton aria-label="plus" sx={{color:"text.main"}} onClick={handleMenuClick}>
+        <IconButton aria-label="plus" onClick={handleMenuClick}>
             <AddIcon />
             <Menu
                 spacing={0}
@@ -70,29 +75,29 @@ export default function AddContentMenu(props) {
                 anchorOrigin=	{{ vertical: 'bottom', horizontal: 'left', }}
                 sx={
                     { mt: "1px", "& .MuiMenu-paper":
-                            { backgroundColor: "primary.main", },
+                            { backgroundColor: "menu.main", },
                     }
                 }
             >
-                <MenuItem sx={{color:"text.main"}} onClick={handleTextAddClick}>
+                <MenuItem onClick={handleTextAddClick}>
                     <ShortTextIcon/>
                     <Typography variant="subtitle1">
                         Add Text
                     </Typography>
                 </MenuItem>
-                <MenuItem sx={{color:"text.main"}} onClick={handleDivAddClick}>
+                <MenuItem onClick={handleDivAddClick}>
                     <HorizontalRuleIcon/>
                     <Typography variant="subtitle1">
                         Add Divider
                     </Typography>
                 </MenuItem>
-                <MenuItem sx={{color:"text.main"}} onClick={handleCheckBoxAddClick}>
+                <MenuItem onClick={handleCheckBoxAddClick}>
                     <CheckBoxIcon/>
                     <Typography variant="subtitle1">
                         Add Checkbox
                     </Typography>
                 </MenuItem>
-                <MenuItem sx={{color:"text.main"}} onClick={handlePageAddClick}>
+                <MenuItem onClick={handlePageAddClick}>
                     <ArticleIcon/>
                     <Typography variant="subtitle1">
                         Add New Page

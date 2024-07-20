@@ -11,7 +11,6 @@ class DocumentManager{
         if (!DocumentManager.instance) {
             DocumentManager.instance = this;
             this.pages = {};// {pageID: page, pageID: page}
-            this.selectedContentID = null;
             this.currentPage = null;
             this.updates={
                 page_id : null,
@@ -63,7 +62,7 @@ class DocumentManager{
     }
 
     async maintainChanges() {//should be called whenever changes should be saved. ie. page change or roughly every 3 seconds
-        console.log(this.updates);
+        console.log('saving...')
         this.updates.page_id = this.currentPage._id;
         if (this.updates.content.dirty) {
             this.updates.content.changes = this.currentPage.content;
@@ -144,10 +143,6 @@ class DocumentManager{
          type:"text", value:" ", id: uuidv4()
         });
         this.updates.content.dirty = true;
-    }
-
-    getSelectedContentID(){
-        return this.selectedContentID;
     }
 
     addTextContentByID(referralID){

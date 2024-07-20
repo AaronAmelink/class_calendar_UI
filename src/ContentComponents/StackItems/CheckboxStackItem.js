@@ -3,6 +3,8 @@ import DocumentManager from "../../managment/documentManager";
 import {useEffect, useRef, useState} from "react";
 import Checkbox from '@mui/material/Checkbox';
 import documentManager from "../../managment/documentManager";
+import {setSaved} from "../../slices/pageDataSlice";
+import {useDispatch} from "react-redux";
 export default function CheckboxStackItem(props) {
     const id = props.id;
     const index = props.index;
@@ -10,7 +12,8 @@ export default function CheckboxStackItem(props) {
     const [checked, setChecked] = useState(DocumentManager.currentPage.content[index].checked);
     const [indent, setIndent] = useState(DocumentManager.currentPage.content[index].indent)
     const [shiftDown, setShiftDown] = useState(false);
-    const [autoFocus, setAutoFocus] = useState(documentManager.getSelectedContentID() === id);
+    const [autoFocus, setAutoFocus] = useState(false);
+    const dispatch = useDispatch();
     const handleTextChange = (newValue) =>{
         setText(newValue);
         DocumentManager.updateContent(id, {
@@ -19,7 +22,8 @@ export default function CheckboxStackItem(props) {
             type: "checkbox",
             checked : checked,
             indent : indent
-        })
+        });
+        dispatch(setSaved(false));
     }
 
     const handleCheckChange = (event) => {
@@ -31,7 +35,7 @@ export default function CheckboxStackItem(props) {
             checked : event.target.checked,
             indent : indent
         });
-        console.log(DocumentManager.currentPage.content[index]);
+        dispatch(setSaved(false));
     };
 
     const handleKeyUp = (e) => {
@@ -57,7 +61,6 @@ export default function CheckboxStackItem(props) {
                 indent : indent
             })
             props.onPageUpdate();
-            DocumentManager.selectedContentID = insertedID;
         }
 
         if (e.key === "Tab" && DocumentManager.currentPage.content[index].indent < 6 && DocumentManager.currentPage.content[index].indent >= 0){
@@ -85,7 +88,6 @@ export default function CheckboxStackItem(props) {
     }
 
     const handleClick = () => {
-        DocumentManager.selectedContentID = id;
     }
 
     return(
@@ -108,8 +110,8 @@ export default function CheckboxStackItem(props) {
                     autoFocus={autoFocus}
                     id={id}
                     variant={"standard"}
-                    InputProps={{disableUnderline: true, style : {color: "#989898"}}}
-                    sx={{ input: { color: 'text.main' }, width: '100%', textOverflow: 'clip' }}
+                    InputProps={{disableUnderline: true}}
+                    sx={{ width: '100%', textOverflow: 'clip' }}
                     onChange={ e=>handleTextChange(e.target.value)}
 
                     onKeyDown={handleKeyDown}

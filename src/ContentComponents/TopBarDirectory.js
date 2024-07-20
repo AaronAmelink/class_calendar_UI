@@ -3,21 +3,19 @@ import * as React from 'react';
 import { Breadcrumbs, Button } from "@mui/material";
 import { Link } from "react-router-dom";
 import {useSelector} from "react-redux";
-export default function TopBarDirectory(props) {
+import {PageLink} from "./PageLink";
+
+export default function TopBarDirectory() {
     const dataLoaded = useSelector((state) => state.pageData.loaded);
+
 
     return(
         <div>
             <Breadcrumbs seperator="›">
                 {
-                    dataLoaded && DocumentManager.getDirectoryOfDocument(props.pageID).slice().reverse().map((pageID) => {
-                        let pageName = DocumentManager.pages[pageID]?.page_name ?? DocumentManager.currentPage?.page_name ?? 'error';
+                    dataLoaded && DocumentManager.getDirectoryOfDocument(DocumentManager.currentPage._id).slice().reverse().map((pageID) => {
                         return (
-                            <Link to={pageID}>
-                                <Button variant="text" color="secondary">
-                                    {pageName}
-                                </Button>
-                            </Link>
+                            <PageLink pageID={pageID} buttonVariant='text' />
                         );
                     })
                 }

@@ -13,7 +13,8 @@ import PersonIcon from '@mui/icons-material/Person';
 import Container from "@mui/material/Container";
 import httpHelper from '../managment/httpHelper';
 import {useNavigate} from "react-router-dom";
-function LogInPage(props){
+import pageURLs from "./pageURLs";
+function LogInPage(){
     const [displayPswrdNotMatching, setDisplayPswrdNotMatching] = useState();
     const [loggingIn, setLoggingIn] = useState(true);
     const [emailTaken, setEmailTaken] = useState(false);
@@ -51,12 +52,10 @@ function LogInPage(props){
                 else{
                     const loginSig = await httpHelper.loginRequest(email, password);
                     if (loginSig?.auth === true){
-                        props.setLoggedin(true);
                         window.sessionStorage.setItem("authToken", 'Bearer ' + loginSig.signature);
                         window.sessionStorage.setItem("user_id", loginSig.userProfile._id);
                     }
                     else{
-                        props.setLoggedin(false);
                         console.log("user registered, but could not complete login");
                     }
                 }
@@ -69,8 +68,7 @@ function LogInPage(props){
                 console.log("logged in");
                 window.sessionStorage.setItem("authToken", 'Bearer ' + res.signature);
                 window.sessionStorage.setItem("user_id", res.userProfile._id);
-                props.setLoggedin(true);
-                navigate('/page/7e1f8abc-a768-4e7e-942d-6d5cb8548fdc');
+                navigate(pageURLs.page + '/7e1f8abc-a768-4e7e-942d-6d5cb8548fdc');
             }
             if (res?.auth === false){
                 setWrongPassword(true);
@@ -93,7 +91,7 @@ function LogInPage(props){
                         autoComplete="current-password"
                         aria-label="password"
                         onSubmit={handleSubmit}
-                        sx={{ input: { color: 'text.main' }, width: '100%', textOverflow: 'clip' }}
+                        sx={{ width: '100%', textOverflow: 'clip' }}
                         color={'secondary'}
                     />
                     {wrongPassword &&
@@ -113,7 +111,7 @@ function LogInPage(props){
                         fullWidth
                         name="username"
                         label="User Name"
-                        sx={{ input: { color: 'text.main' }, width: '100%', textOverflow: 'clip' }}
+                        sx={{ width: '100%', textOverflow: 'clip' }}
                         color={'secondary'}
                     />
                     <TextField
@@ -124,7 +122,7 @@ function LogInPage(props){
                         type="password"
                         name="password"
                         label="Set Password"
-                        sx={{ input: { color: 'text.main' }, width: '100%', textOverflow: 'clip' }}
+                        sx={{ width: '100%', textOverflow: 'clip' }}
                         color={'secondary'}
                     />
                     <TextField
@@ -135,7 +133,7 @@ function LogInPage(props){
                         fullWidth
                         label="Confirm Password"
                         name="confirm password"
-                        sx={{ input: { color: 'text.main' }, width: '100%', textOverflow: 'clip' }}
+                        sx={{ width: '100%', textOverflow: 'clip' }}
                         color={'secondary'}
                     />
                     {displayPswrdNotMatching &&
@@ -193,7 +191,7 @@ function LogInPage(props){
                             label="Email Address"
                             margin="normal"
                             name="email"
-                            sx={{ input: { color: 'text.main' }, width: '100%', textOverflow: 'clip' }}
+                            sx={{ width: '100%', textOverflow: 'clip' }}
                             color={'secondary'}
                         />
                         <RenderedInputs/>

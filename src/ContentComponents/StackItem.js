@@ -9,11 +9,13 @@ import AddContentMenu from "./AddContentMenu";
 import DividerStackItem from "./StackItems/DividerStackItem";
 import CheckboxStackItem from "./StackItems/CheckboxStackItem";
 import PageButtonStackItem from "./StackItems/PageButtonStackItem";
+import {useDispatch} from "react-redux";
+import {setSaved} from "../slices/pageDataSlice";
 function StackItemContainer(props) {
     const id = props.id;
     const [isGarbageVisible, setIsGarbageVisible] = useState(false);
     const index =  props.index;
-
+    const dispatch = useDispatch();
 
     const handleMouseEnter = () =>{
         setIsGarbageVisible(true);
@@ -25,9 +27,9 @@ function StackItemContainer(props) {
     
 
     const handleDeleteClick = () => {
+        dispatch(setSaved(false));
         props.removeContent(id);
     }
-
 
     return (
         <Stack

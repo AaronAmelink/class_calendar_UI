@@ -7,17 +7,15 @@ import StackItem from "../ContentComponents/StackItem";
 import {useEffect, useState} from "react";
 import { useLoaderData } from "react-router-dom";
 import { setLoaded } from '../slices/pageDataSlice'
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
-export default function DocumentPage(props) {
-    const dataLoaded = useSelector((state) => state.pageData.loaded);
+export default function EditPage(props) {
     const dispatch = useDispatch();
     const data = useLoaderData();
     const [ignored, forceUpdate] = useState(false);
 
     useEffect(() => {
         if (data) {
-            console.log(data);
             dispatch(setLoaded(true));
         }
     }, [data]);

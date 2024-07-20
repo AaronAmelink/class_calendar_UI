@@ -7,9 +7,11 @@ import Stack from "@mui/material/Stack";
 import {useState} from "react";
 import ShortTextIcon from '@mui/icons-material/ShortText';
 import DocumentManager from '../../managment/documentManager';
+import {useDispatch} from "react-redux";
+import {setSaved} from "../../slices/pageDataSlice";
 
 export default function AddPropertyMenu(props) {
-
+    const dispatch = useDispatch();
     const [menuVisible, setMenuVisible] = useState(false);
     const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -17,6 +19,7 @@ export default function AddPropertyMenu(props) {
     const handleTextAddClick = ()=> {
         //need to fix state delay
         DocumentManager.addTextProperty();
+        dispatch(setSaved(false));
         props.updateProperties();
     }
     const handleMenuClose= (event) => {
@@ -44,7 +47,7 @@ export default function AddPropertyMenu(props) {
                 anchorOrigin=	{{ vertical: 'bottom', horizontal: 'left', }}
                 sx={
                     { mt: "1px", "& .MuiMenu-paper":
-                            { backgroundColor: "primary.main", },
+                            { backgroundColor: "menu.main", },
                     }
                 }
             >

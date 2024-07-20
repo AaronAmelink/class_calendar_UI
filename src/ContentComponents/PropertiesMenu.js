@@ -10,11 +10,13 @@ import Stack from "@mui/material/Stack";
 import DocumentManager from "../managment/documentManager";
 import Property from "./PropertiesComponents/Property";
 import AddPropertyMenu from "./PropertiesComponents/AddPropertyMenu";
+import {setSaved} from "../slices/pageDataSlice";
+import {useDispatch} from "react-redux";
 
 export default function PropertiesMenu(props) {
     const [menuVisible, setMenuVisible] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
-
+    const dispatch = useDispatch();
     const [properties, SetProperties] = useState([...DocumentManager.getCurrentPageProperties()]);
 
     useEffect(() => {
@@ -30,6 +32,7 @@ export default function PropertiesMenu(props) {
 
     function removeProperty(id){
         DocumentManager.removeProperty(id);
+        dispatch(setSaved(false));
         SetProperties([...DocumentManager.getCurrentPageProperties()]);
     }
 
@@ -72,7 +75,7 @@ export default function PropertiesMenu(props) {
                 anchorOrigin=	{{ vertical: 'bottom', horizontal: 'left', }}
                 sx={
                     { mt: "1px", "& .MuiMenu-paper":
-                            { backgroundColor: "primary.main", },
+                            { backgroundColor: "menu.main", },
                     }
                 }
 

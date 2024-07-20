@@ -2,10 +2,11 @@ import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
     loaded: false,
-    saved: false,
+    saved: true,
+    lastAccessedPage: { name: null, id: null }
 }
 const pageData = createSlice({
-    name: 'pageDataLoaded',
+    name: 'pageData',
     initialState,
     reducers: {
         setLoaded(state, action) {
@@ -13,9 +14,12 @@ const pageData = createSlice({
         },
         setSaved(state, action) {
             state.saved = action.payload
+        },
+        setLastAccessedPage(state, action) {
+            state.lastAccessedPage = action.payload
         }
     },
 })
 
-export const { setLoaded, setSaved } = pageData.actions
+export const { setLoaded, setSaved, setLastAccessedPage } = pageData.actions
 export default pageData.reducer

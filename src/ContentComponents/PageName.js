@@ -1,10 +1,12 @@
 import {useEffect, useState} from "react";
 import DocumentManager from "../managment/documentManager";
 import {TextField, Typography} from "@mui/material";
+import {setSaved} from "../slices/pageDataSlice";
+import {useDispatch} from "react-redux";
 
 export default function PageName(props) {
     const [pageName, setPageName] = useState(DocumentManager.getCurrentPageName());
-
+    const dispatch = useDispatch();
     useEffect(() => {
         setPageName(DocumentManager.getCurrentPageName());
     }, [props.pageID]);
@@ -12,6 +14,7 @@ export default function PageName(props) {
     function handleChange(value) {
         setPageName(value);
         DocumentManager.updatePageName(value);
+        dispatch(setSaved(false));
     }
 
     return(
@@ -21,7 +24,7 @@ export default function PageName(props) {
             inputProps={{style: {fontSize: 40}}}
             onChange={ e=>handleChange(e.target.value)}
             value={pageName}
-            color={'secondary'}
+            color={'underline'}
             focused
         />
 

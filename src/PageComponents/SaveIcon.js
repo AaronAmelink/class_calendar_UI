@@ -6,16 +6,21 @@ import CachedIcon from '@mui/icons-material/Cached';
 import CheckIcon from '@mui/icons-material/Check';
 import {useDispatch, useSelector} from "react-redux";
 import {setSaved} from "../slices/pageDataSlice";
+import {useLocation} from "react-router-dom";
+import pageURLs from "./pageURLs";
 export default function SaveIcon(props) {
     const saved = useSelector((state) => state.pageData.saved);
     const dispatch = useDispatch();
     const [counter, setCounter] = useState(5);
+    const location = useLocation();
 
     useEffect( () => {
         if (counter === 0) {
             setCounter(5);
             if (!saved) {
-                DocumentManager.maintainChanges();
+                if (location.pathname.includes(pageURLs.page)) {
+                    DocumentManager.maintainChanges();
+                }
                 dispatch(setSaved(true));
             }
         }
@@ -40,7 +45,7 @@ export default function SaveIcon(props) {
 
 
     return (
-        <Box>
+        <Box sx={{color:"icon.main"}}>
             {saved ? <CheckIcon/> : <CachedIcon/>}
         </Box>
     );
