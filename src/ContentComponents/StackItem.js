@@ -52,7 +52,6 @@ function StackItemContainer(props) {
                             </IconButton>
                         </Fade>
                     </Grid>
-
                 </Grid>
             </div>
         </Stack>
@@ -60,35 +59,37 @@ function StackItemContainer(props) {
 
 }
 
-export default function StackItem({id, type, key, index}) {
-    console.log('rerender content');
-    const RenderObject = () =>{
-        if (type === "text"){
-            return(
-                <TextStackItem id={id} index={index}/>
-            );
-        }
-        if (type === "divider"){
-            return(
-                <DividerStackItem/>
-            );
-        }
-        if (type === "checkbox"){
-            return(
-                <CheckboxStackItem index={index} id={id}/>
-            );
-        }
-        if (type === "page"){
-            return(
-              <PageButtonStackItem id={id}/>
-            );
-        }
+export function RenderObject({id, type, index}) {
+    if (type === "text"){
+        return(
+            <TextStackItem id={id} index={index}/>
+        );
     }
+    if (type === "divider"){
+        return(
+            <DividerStackItem/>
+        );
+    }
+    if (type === "checkbox"){
+        return(
+            <CheckboxStackItem index={index} id={id}/>
+        );
+    }
+    if (type === "page"){
+        return(
+            <PageButtonStackItem id={id}/>
+        );
+    }
+
+}
+
+export default function StackItem({id, type, index}) {
+    console.log('rerender content');
     return (
         <StackItemContainer 
             id={id}
             index={index}
-            RenderObject={<RenderObject/>}
+            RenderObject={<RenderObject id={id} type={type} index={index}/>}
         />
     );
 }
