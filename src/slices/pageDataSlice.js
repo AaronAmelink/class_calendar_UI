@@ -54,23 +54,20 @@ export const makeContentSelector = () => {
     return selectContent;
 }
 
-const selectContentID = createSelector(state => state.pageData.currentPage, currentPage => {
-    let mappedContent = currentPage?.content?.map(content => {
+export const getContentBasics = createSelector(state => state.pageData.currentPage, currentPage => {
+    const mappedContent = currentPage.content?.map(content => {
         return {
             id: content.id,
             type: content.type
         }
     });
+    console.log('ello'); //note how every key press ello gets logged. this is incorrect
     return mappedContent ? mappedContent : [];
 });
 
-export const getContentBasics = createSelector(selectContentID, content => {
-    return content ? content : [];
-});
-
-export const getPageID = createSelector(state => state.pageData.currentPage._id, id => {
-    return id;
-});
+export const getPageID = state => {
+    return state.currentPage?._id;
+}
 
 export const {
     setLoaded,

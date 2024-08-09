@@ -14,7 +14,6 @@ import {useLoaderData} from "react-router-dom";
 
 export default function EditPage() {
     const dispatch = useDispatch();
-    const [ignored, ] = useState(false);
     const data = useLoaderData();
     const idArr = useSelector(getContentBasics);
     const pageID = useSelector(getPageID);
