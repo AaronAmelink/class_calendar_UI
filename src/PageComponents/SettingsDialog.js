@@ -15,7 +15,35 @@ import {useDispatch, useSelector} from "react-redux";
 import {useState} from "react";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
-import {setTheme} from "../slices/siteDataSlice";
+import {setColor, setTheme} from "../slices/siteDataSlice";
+import ColorPicker from "./ColorPicker";
+import MenuItem from "@mui/material/MenuItem";
+import Menu from "@mui/material/Menu";
+import * as React from "react";
+import {ArrowDropDown} from "@mui/icons-material";
+
+
+
+/*
+<Box sx={{width:1, height:1}}>
+                    <Button sx={{color:'text.primary'}} variant={'outlined'} endIcon={<ArrowDropDown/>} onClick={handleColorClick}>Accent Color</Button>
+                    <Menu
+                        open={colorPickerVisible}
+                        id={"Props-Menu"}
+                        onClose={handleColorClick}
+                        anchorEl={anchorEl}
+                        display="flex"
+                        anchorOrigin=	{{ vertical: 'bottom', horizontal: 'left', }}
+                    >
+                        <Box
+                            justifyContent="center"
+                            alignItems="center"
+                        >
+                            <ColorPicker setColor={(color) => dispatch(setColor(color))}/>
+                        </Box>
+                    </Menu>
+                </Box>
+ */
 
 const menuItems = {
     'Account': {
@@ -50,6 +78,8 @@ function AppearanceGrid() {
     const dispatch = useDispatch();
     const currentTheme = useSelector((state) => state.siteData.theme)
     const [lightModeSwitch, setLightModeSwitch] = useState(currentTheme === 'light')
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const [colorPickerVisible, setColorPickerVisible] = useState(false);
     function switchTheme() {
         if (lightModeSwitch) {
             setLightModeSwitch(false);
@@ -60,19 +90,38 @@ function AppearanceGrid() {
         }
     }
 
+    const handleColorClick = (event: MouseEvent) =>{
+        if (colorPickerVisible){
+            handleColorClose(event);
+        }
+        else{
+            handleColorOpen(event);
+        }
+    }
+    const handleColorClose= (event : React.MouseEvent) => {
+        setColorPickerVisible(false);
+        setAnchorEl(null);
+    }
+
+    const handleColorOpen = (event : React.MouseEvent) => {
+        setColorPickerVisible(true);
+        setAnchorEl(event.currentTarget);
+    }
+
     return (
         <Container sx={{pr:-10}}>
             <Stack spacing={2} >
                 <SettingTitle name='Appearance' sx={{pb:5}}/>
                 <Stack spacing={2} direction='row'>
                     <Typography variant='subtitle1' sx={{pt:0.5}}>
-                        Theme: {currentTheme}
+                        Theme: {currentTheme.theme}
                     </Typography>
                     <Switch
                         checked={!lightModeSwitch}
                         onChange={switchTheme}
                     />
                 </Stack>
+
             </Stack>
         </Container>
     );
@@ -88,7 +137,7 @@ function MenuButton({theme, item, setSelected, selected}) {
             style=
                 {{
                     textTransform: 'none',
-                    backgroundColor: selected ? allThemes[theme].palette.menu.selected : allThemes[theme].palette.menu.button,
+                    backgroundColor: selected ? allThemes[theme.mode].palette.menu.selected : allThemes[theme.mode].palette.menu.button,
                     justifyContent: "flex-start"
                 }}
             variant='contained'
@@ -103,24 +152,6 @@ function MenuButton({theme, item, setSelected, selected}) {
     )
 }
 
-
-function SideMenu({theme, setSelected, selected}) {
-    return (
-        <Stack
-            spacing={1}
-            divider={<Divider flexItem variant="middle"/>}
-        >
-            {
-                Object.keys(menuItems).map((key) => {
-                    return (
-                        <MenuButton theme={theme} item={key} setSelected={setSelected} selected={selected === key}/>
-                    );
-                })
-            }
-
-        </Stack>
-    );
-}
 
 export default function SettingsDialog({handleClose, open}) {
     const theme = useSelector((state) => state.siteData.theme);
@@ -146,7 +177,19 @@ export default function SettingsDialog({handleClose, open}) {
                 spacing={4}
                 sx={{m:2, xs: 1, sm: 2}}
                >
-                <SideMenu theme={theme} setSelected={setSelected} selected={selected}/>
+                <Stack
+                    spacing={1}
+                    divider={<Divider flexItem variant="middle"/>}
+                >
+                    {
+                        Object.keys(menuItems).map((key) => {
+                            return (
+                                <MenuButton theme={theme} item={key} setSelected={setSelected} selected={selected === key}/>
+                            );
+                        })
+                    }
+
+                </Stack>
                 {
                     menuItems[selected].component
                 }

@@ -21,7 +21,7 @@ function Document() {
 
     return (
         <div>
-            <ThemeProvider theme={allThemes[theme]}>
+            <ThemeProvider color={theme.color} theme={allThemes[theme.mode]}>
                 <CssBaseline/>
                 <Container maxWidth={false} disableGutters={true}>
                     <TopBar pageID={params.pageID}/>

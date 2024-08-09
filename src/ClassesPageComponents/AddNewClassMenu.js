@@ -4,8 +4,13 @@ import {Numbers, Class, School, Person, CalendarMonth, Add, Extension} from "@mu
 import {useState} from "react";
 import MenuItem from "@mui/material/MenuItem";
 import Stack from "@mui/material/Stack";
-function ClassInputField({icon, label, required, numbersOnly, CSV}) {
-    const [value, setValue] = useState('')
+import {useDispatch} from "react-redux";
+import {addClass} from "../slices/classDataSlice";
+import Typography from "@mui/material/Typography";
+import httpHelper from "../managment/httpHelper";
+const { v4: uuidv4 } = require('uuid');
+
+function ClassInputField({icon, label, required, numbersOnly, CSV, value, setValue, error}) {
 
     function handleChange(event) {
         let filteredValue = event.target.value
@@ -28,6 +33,7 @@ function ClassInputField({icon, label, required, numbersOnly, CSV}) {
             <TextField
                 label={label}
                 value={value}
+                error={error}
                 required={required}
                 variant="standard"
                 onChange={handleChange}
@@ -44,90 +50,142 @@ function ClassInputField({icon, label, required, numbersOnly, CSV}) {
 }
 
 export default function AddNewClassMenu() {
+    const dispatch = useDispatch();
+    const [className, setClassName] = useState('');
+    const [classNameEmpty, setClassNameEmpty] = useState(false);
+    const [courseCodeEmpty, setCourseCodeEmpty] = useState(false);
+    const [courseCode, setCourseCode] = useState('');
+    const [creditWorth, setCreditWorth] = useState('');
+    const [preRequisites, setPreRequisites] = useState('');
+    const [professor, setProfessor] = useState('');
+    const [season, setSeason] = useState([]);
     const [yearsOffered, setYearsOffered] = useState('');
-    const [season, setSeason] = useState([])
+    const inputSetters = [setClassName, setCourseCode, setCreditWorth, setPreRequisites, setProfessor, setYearsOffered];
 
-    function handleYearsOfferedChange(event) {
+    const handleSeasonChange = (event) => {
+        setSeason(event.target.value);
+    }
+    const handleYearsOfferedChange = (event) => {
         setYearsOffered(event.target.value);
     }
 
-    function handleSeasonChange(event) {
-        setSeason(event.target.value);
+
+    function handleAdd() {
+        let invalidSubmit = false;
+        if (className.replaceAll(' ', '') === '') {
+            setClassNameEmpty(true);
+            invalidSubmit = true;
+        }
+        if (courseCode.replaceAll(' ', '') === '') {
+            setCourseCodeEmpty(true);
+            invalidSubmit = true;
+        }
+        if (invalidSubmit) return;
+        setClassNameEmpty(false);
+        setCourseCodeEmpty(false);
+
+        let id = uuidv4();
+        let newClass = {
+            professor: professor,
+            seasonsOffered: season.toString(),
+            className: className,
+            courseCode: courseCode,
+            creditWorth: creditWorth,
+            preRequisites: preRequisites,
+            yearsOffered: yearsOffered,
+            id: id
+        };
+        dispatch(addClass(newClass));
+        console.log(newClass);
+
+        inputSetters.forEach(setter => {
+            setter('');
+        });
+        setSeason([]);
     }
 
     return (
         <Paper elevation={0} variant='outlined' sx={{bgcolor:'background.elevated', boxShadow:5, height:1, px:5, overflow: 'auto'}}>
-               <Stack container spacing={2}>
-                   <Grid container spacing={2}>
-                       <Grid item xs={4}>
-                           <ClassInputField required icon={<Class sx={{mr: 1, my: 0.5 }}/>} label='Class Name'/>
-                       </Grid>
-                       <Grid item xs={4}>
-                           <ClassInputField required icon={<Numbers sx={{mr: 1, my: 0.5 }}/>} label='Course Code'/>
+            <Stack container spacing={2}>
+                <Grid container spacing={2}>
+                    <Grid item xs={4}>
+                        <ClassInputField required icon={<Class sx={{mr: 1, my: 0.5 }}/>} label='Class Name' value={className} setValue={setClassName}  error={classNameEmpty}/>
+                    </Grid>
+                    <Grid item xs={4}>
+                        <ClassInputField required icon={<Numbers sx={{mr: 1, my: 0.5 }}/>} label='Course Code' value={courseCode} setValue={setCourseCode} error={courseCodeEmpty}/>
 
-                       </Grid>
-                       <Grid item xs={4}>
-                           <ClassInputField numbersOnly icon={<School sx={{mr: 1, my: 0.5 }}/>} label='Credit Worth'/>
-                       </Grid>
-                   </Grid>
-                   <Grid container spacing={2}>
-                       <Grid item xs={4}>
-                           <ClassInputField CSV required icon={<Extension sx={{mr: 1, my: 0.5 }}/>} label='Pre Requisites'/>
-                       </Grid>
-                       <Grid item xs={4}>
-                           <ClassInputField icon={<Person sx={{mr: 1, my: 0.5 }}/>} label='Professor'/>
-                       </Grid>
-                       <Grid item xs={4}>
-                           <Box sx={{ display: 'flex', alignItems: 'flex-end'}}>
-                               <CalendarMonth sx={{mr: 1, my: 0.5}}/>
-                               <Grid container spacing={2}>
-                                   <Grid item xs={6}>
-                                       <FormControl variant='standard' sx={{width:1}}>
-                                           <InputLabel>Season</InputLabel>
-                                           <Select
-                                               variant='standard'
-                                               value={season}
-                                               multiple
-                                               onChange={handleSeasonChange}
-                                           >
-                                               <MenuItem value={'Fall'}>Fall</MenuItem>
-                                               <MenuItem value={'Winter'}>Winter</MenuItem>
-                                               <MenuItem value={'Summer'}>Summer</MenuItem>
+                    </Grid>
+                    <Grid item xs={4}>
+                        <ClassInputField numbersOnly icon={<School sx={{mr: 1, my: 0.5 }}/>} label='Credit Worth' value={creditWorth} setValue={setCreditWorth}/>
+                    </Grid>
+                </Grid>
+                <Grid container spacing={2}>
+                    <Grid item xs={4}>
+                        <ClassInputField CSV required icon={<Extension sx={{mr: 1, my: 0.5 }}/>} label='Pre Requisites' value={preRequisites} setValue={setPreRequisites} />
+                    </Grid>
+                    <Grid item xs={4}>
+                        <ClassInputField icon={<Person sx={{mr: 1, my: 0.5 }}/>} label='Professor' value={professor} setValue={setProfessor}/>
+                    </Grid>
+                    <Grid item xs={4}>
+                        <Box sx={{ display: 'flex', alignItems: 'flex-end'}}>
+                            <CalendarMonth sx={{mr: 1, my: 0.5}}/>
+                            <Grid container spacing={2}>
+                                <Grid item xs={6}>
+                                    <FormControl variant='standard' sx={{width:1}}>
+                                        <InputLabel>Season *</InputLabel>
+                                        <Select
+                                            variant='standard'
+                                            value={season}
+                                            multiple
+                                            required
+                                            onChange={handleSeasonChange}
+                                        >
+                                            <MenuItem value={'Fall'}>Fall</MenuItem>
+                                            <MenuItem value={'Winter'}>Winter</MenuItem>
+                                            <MenuItem value={'Summer'}>Summer</MenuItem>
 
-                                           </Select>
-                                       </FormControl>
-                                   </Grid>
-                                   <Grid item xs={6}>
-                                       <FormControl variant='standard' sx={{width:1}}>
-                                           <InputLabel>Offered</InputLabel>
-                                           <Select
-                                               variant='standard'
-                                               value={yearsOffered}
-                                               onChange={handleYearsOfferedChange}
-                                           >
-                                               <MenuItem value={'Every'}>Every Year</MenuItem>
-                                               <MenuItem value={'Even'}>Even Years</MenuItem>
-                                               <MenuItem value={'Odd'}>Odd Years</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <FormControl variant='standard' sx={{width:1}}>
+                                        <InputLabel>Offered *</InputLabel>
+                                        <Select
+                                            variant='standard'
+                                            value={yearsOffered}
+                                            onChange={handleYearsOfferedChange}
+                                        >
+                                            <MenuItem value={'Every'}>Every Year</MenuItem>
+                                            <MenuItem value={'Even'}>Even Years</MenuItem>
+                                            <MenuItem value={'Odd'}>Odd Years</MenuItem>
 
-                                           </Select>
-                                       </FormControl>
-                                   </Grid>
+                                        </Select>
+                                    </FormControl>
+                                </Grid>
 
-                               </Grid>
-                           </Box>
-                       </Grid>
-                   </Grid>
-                   <Grid container spacing={2}>
-                       <Grid item xs={12}>
-                           <Box
-                               display="flex"
-                               justifyContent="center"
-                               alignItems="center">
-                               <Button color='secondary' startIcon={(<Add/>)} variant='contained' sx={{width:1/4}}>Add</Button>
-                           </Box>
-                       </Grid>
-                   </Grid>
-               </Stack>
+                            </Grid>
+                        </Box>
+                    </Grid>
+                </Grid>
+                <Grid container spacing={2}>
+                    <Grid item xs={4}>
+                        <Typography variant='caption'>
+                            Items marked with * are required for autosort
+                        </Typography>
+                    </Grid>
+                    <Grid item xs={4}>
+                        <Box
+                            display="flex"
+                            justifyContent="center"
+                            alignItems="center">
+                            <Button color='secondary' startIcon={(<Add/>)} variant='contained' sx={{width:1}} onClick={handleAdd}>Add</Button>
+                        </Box>
+                    </Grid>
+                    <Grid item xs={4}>
+
+                    </Grid>
+                </Grid>
+            </Stack>
         </Paper>
     );
 }

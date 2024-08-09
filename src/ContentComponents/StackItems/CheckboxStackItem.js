@@ -1,41 +1,50 @@
 import {Grid, TextField} from "@mui/material";
 import DocumentManager from "../../managment/documentManager";
-import {useEffect, useRef, useState} from "react";
+import {useEffect, useMemo, useRef, useState} from "react";
 import Checkbox from '@mui/material/Checkbox';
-import documentManager from "../../managment/documentManager";
-import {setSaved} from "../../slices/pageDataSlice";
-import {useDispatch} from "react-redux";
+import {makeContentSelector, setSaved} from "../../slices/pageDataSlice";
+import {useDispatch, useSelector} from "react-redux";
+import usePageData from "../../customHooks/pageDataHook";
+import {useParams} from "react-router-dom";
+const { v4: uuidv4 } = require('uuid');
 export default function CheckboxStackItem(props) {
     const id = props.id;
-    const index = props.index;
-    const [text, setText] = useState(DocumentManager.currentPage.content[index].value);
-    const [checked, setChecked] = useState(DocumentManager.currentPage.content[index].checked);
-    const [indent, setIndent] = useState(DocumentManager.currentPage.content[index].indent)
+    const index = props.index
+    const contentSelector = useMemo(makeContentSelector, [])
+
+    const content = useSelector(state =>
+        contentSelector(state, id)
+    )
+    const [text, setText] = useState(content.value);
+    const [checked, setChecked] = useState(content.checked);
+    const [indent, setIndent] = useState(content.indent);
     const [shiftDown, setShiftDown] = useState(false);
     const [autoFocus, setAutoFocus] = useState(false);
-    const dispatch = useDispatch();
+    const params = useParams();
+    const {  addContent, updateContent } = usePageData();
+
     const handleTextChange = (newValue) =>{
         setText(newValue);
-        DocumentManager.updateContent(id, {
-            value : newValue,
-            id : id,
-            type: "checkbox",
-            checked : checked,
-            indent : indent
-        });
-        dispatch(setSaved(false));
+        updateContent(
+            {
+                value : newValue,
+                checked: checked,
+                id : id,
+                type: "checkbox",
+                indent: indent
+            }, props.page_id);
     }
 
     const handleCheckChange = (event) => {
         setChecked(event.target.checked);
-        DocumentManager.updateContent(id, {
-            value : text,
-            id :id,
-            type: "checkbox",
-            checked : event.target.checked,
-            indent : indent
-        });
-        dispatch(setSaved(false));
+        updateContent(
+            {
+                value : text,
+                checked: event.target.checked,
+                id : id,
+                type: "checkbox",
+                indent: indent
+            }, props.page_id);
     };
 
     const handleKeyUp = (e) => {
@@ -52,37 +61,37 @@ export default function CheckboxStackItem(props) {
         if (e.key === "Shift") setShiftDown(true);
 
         if (e.key === "Enter"){
-            let insertedID = DocumentManager.addCheckBoxByIndex(index);
-            DocumentManager.updateContent(insertedID, {
-                value : " ",
-                id :insertedID,
+            addContent(index,{
+                value : '',
+                id : uuidv4(),
                 type: "checkbox",
                 checked : checked,
                 indent : indent
-            })
-            props.onPageUpdate();
+            }, params);
         }
 
-        if (e.key === "Tab" && DocumentManager.currentPage.content[index].indent < 6 && DocumentManager.currentPage.content[index].indent >= 0){
-            if (shiftDown && DocumentManager.currentPage.content[index].indent > 0){
+        if (e.key === "Tab" && indent < 6 && indent >= 0){
+            if (shiftDown && indent > 0){
                 setIndent(indent-1);
-                DocumentManager.updateContent(id, {
-                    value : text,
-                    id :id,
-                    type: "checkbox",
-                    checked : checked,
-                    indent : indent-1
-                });
+                updateContent(
+                    {
+                        value : text,
+                        checked: checked,
+                        id : id,
+                        type: "checkbox",
+                        indent: indent-1
+                    }, props.page_id);
             }
             else{
                 setIndent(indent+1);
-                DocumentManager.updateContent(id, {
-                    value : text,
-                    id :id,
-                    type: "checkbox",
-                    checked : checked,
-                    indent : indent+1
-                });
+                updateContent(
+                    {
+                        value : text,
+                        checked: checked,
+                        id : id,
+                        type: "checkbox",
+                        indent: indent+1
+                    }, props.page_id);
             }
         }
     }

@@ -73,9 +73,9 @@ export default function TopBar(props) {
                             aria-controls={menuIconsVisible ? 'basic-menu' : undefined}
                             sx={{color:"icon.main"}}
                         >
-                        <MenuIcon />
-                            <Divider orientation="vertical" sx={{pl:3}}/>
+                            <MenuIcon />
                         </IconButton>
+
                         <Menu
                             open={menuIconsVisible}
                             id={"Nav-Menu"}
@@ -95,11 +95,12 @@ export default function TopBar(props) {
                             <MenuNavigator url={pageURLs.classes} text='Classes'/>
 
                         </Menu>
+                        <Divider orientation="vertical" sx={{mx:3}} flexItem variant='middle' />
+
+
                         {
                             props.pageID && location.pathname.includes(props.pageID) ?
-                            (<Typography variant="h6" sx={{ml:4}} >
-                                <TopBarDirectory/>
-                            </Typography>) : (<div></div>)
+                            (<TopBarDirectory/>) : (<div></div>)
                         }
                         {
                             location.pathname.includes(pageURLs.classes) ?
@@ -108,6 +109,7 @@ export default function TopBar(props) {
                                 ) : (<div></div>)
                         }
                     </Box>
+
                     <SaveIcon/>
                     <AccountIcon/>
                 </Toolbar>

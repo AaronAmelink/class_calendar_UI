@@ -9,13 +9,13 @@ import AddContentMenu from "./AddContentMenu";
 import DividerStackItem from "./StackItems/DividerStackItem";
 import CheckboxStackItem from "./StackItems/CheckboxStackItem";
 import PageButtonStackItem from "./StackItems/PageButtonStackItem";
-import {useDispatch} from "react-redux";
-import {setSaved} from "../slices/pageDataSlice";
+import usePageData from "../customHooks/pageDataHook";
 function StackItemContainer(props) {
     const id = props.id;
+    const {removeContent} = usePageData();
     const [isGarbageVisible, setIsGarbageVisible] = useState(false);
     const index =  props.index;
-    const dispatch = useDispatch();
+
 
     const handleMouseEnter = () =>{
         setIsGarbageVisible(true);
@@ -24,11 +24,8 @@ function StackItemContainer(props) {
         setIsGarbageVisible(false);
     }
 
-    
-
     const handleDeleteClick = () => {
-        dispatch(setSaved(false));
-        props.removeContent(id);
+        removeContent(id);
     }
 
     return (
@@ -44,7 +41,7 @@ function StackItemContainer(props) {
                     <Grid xs={0.4}>
                         <Fade in={isGarbageVisible} style={{visibility: isGarbageVisible ? "visible" : "hidden"}}>
                             <div>
-                                <AddContentMenu onPageUpdate={props.onPageUpdate} index={index}/>
+                                <AddContentMenu index={index}/>
                             </div>
                         </Fade>
                     </Grid>
@@ -63,40 +60,35 @@ function StackItemContainer(props) {
 
 }
 
-export default function StackItem(props) {
-    const index =  props.index;
-    const id = props.id;
-
+export default function StackItem({id, type, key, index}) {
+    console.log('rerender content');
     const RenderObject = () =>{
-        if (props.object.type === "text"){
+        if (type === "text"){
             return(
                 <TextStackItem id={id} index={index}/>
             );
         }
-        if (props.object.type === "divider"){
+        if (type === "divider"){
             return(
                 <DividerStackItem/>
             );
         }
-        if (props.object.type === "checkbox"){
+        if (type === "checkbox"){
             return(
-                <CheckboxStackItem id={id} index={index} onPageUpdate={props.onPageUpdate}/>
+                <CheckboxStackItem index={index} id={id}/>
             );
         }
-        if (props.object.type === "page"){
+        if (type === "page"){
             return(
-              <PageButtonStackItem pageID={props.object.linkedPageID} onPageUpdate={props.onPageUpdate}/>
+              <PageButtonStackItem id={id}/>
             );
         }
     }
     return (
         <StackItemContainer 
-            id={props.id} 
-            index={props.index} 
-            onPageUpdate={props.onPageUpdate} 
+            id={id}
+            index={index}
             RenderObject={<RenderObject/>}
-            removeContent={props.removeContent}
-            object={props.object}
         />
     );
 }

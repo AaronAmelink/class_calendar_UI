@@ -42,7 +42,8 @@ class HttpHelper {
                 headers: {
                     "Authorization": window.sessionStorage.getItem("authToken"),
                 }
-            })).json()
+            })).json();
+            console.log(response);
             return response;
         } catch (e) {
             console.log(e);

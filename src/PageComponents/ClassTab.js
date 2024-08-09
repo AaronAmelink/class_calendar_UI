@@ -20,11 +20,10 @@ export default function ClassTab() {
               sx={{
         ".MuiTab-root.Mui-selected":
             {
-                color: allThemes[theme].palette.icon.main,
+                color: allThemes[theme.mode].palette.icon.main,
             },
           "& .MuiTabs-indicator": {
-              backgroundColor: 'menu.selected',
-              height: 3,
+              backgroundColor: 'menu.selected'
           }
         }}>
             {

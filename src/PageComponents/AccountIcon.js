@@ -68,7 +68,7 @@ export default function AccountIcon() {
                         }
                     }
                 >
-                    <Stack divider={<Divider flexItem variant="middle"/>}>
+                    <Stack divider={<Divider flexItem variant="middle" sx={{bgcolor:'text.primary'}}/>}>
                         <MenuItem onClick={openSettings}>
                             <SettingsIcon sx={{mr:1}}/>
                             Settings

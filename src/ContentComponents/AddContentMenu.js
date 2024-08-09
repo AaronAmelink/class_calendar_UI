@@ -1,11 +1,10 @@
 import MenuItem from "@mui/material/MenuItem";
 import IconButton from "@mui/material/IconButton";
 import AddIcon from "@mui/icons-material/Add";
-import {Button, Grid, Typography} from "@mui/material";
+import { Typography } from "@mui/material";
 import * as React from "react";
 import Menu from "@mui/material/Menu";
-import Stack from "@mui/material/Stack";
-import {useId, useState} from "react";
+import { useState } from "react";
 import ShortTextIcon from '@mui/icons-material/ShortText';
 import DocumentManager from "../managment/documentManager";
 import HorizontalRuleIcon from '@mui/icons-material/HorizontalRule';
@@ -13,36 +12,31 @@ import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import ArticleIcon from '@mui/icons-material/Article';
 import {useDispatch} from "react-redux";
 import {setSaved} from "../slices/pageDataSlice";
+import usePageData from "../customHooks/pageDataHook";
+import {useParams} from "react-router-dom";
+const { v4: uuidv4 } = require('uuid');
 
 export default function AddContentMenu(props) {
 
     const [menuVisible, setMenuVisible] = useState(false);
     const [anchorEl, setAnchorEl] = React.useState(null);
-    const dispatch = useDispatch();
+    const params = useParams();
+    const {addContent} = usePageData();
 
     const handleTextAddClick = ()=> {
-        DocumentManager.addTextContentByIndex(props.index);
-        props.onPageUpdate();
-        dispatch(setSaved(false));
-
+        addContent(props.index, {type: "text", value: "", id: uuidv4()}, params);
     }
 
     const handleDivAddClick = () => {
-        DocumentManager.addDividerContentByIndex(props.index);
-        props.onPageUpdate();
-        dispatch(setSaved(false));
+        addContent(props.index, {type: "divider", id: uuidv4()}, params);
     }
 
     const handleCheckBoxAddClick = () => {
-        DocumentManager.addCheckBoxByIndex(props.index);
-        props.onPageUpdate();
-        dispatch(setSaved(false));
+        addContent(props.index, {type: "checkbox", value: "", id: uuidv4(), checked:false, indent:0}, params);
     }
 
     const handlePageAddClick = () => {
-        DocumentManager.addNewPageByIndex(props.index, DocumentManager.currentPage._id);
-        props.onPageUpdate();
-        dispatch(setSaved(false));
+        addContent(props.index, {type: "page", value: 'New Page', id: uuidv4(), linkedPageID: uuidv4()}, params);
     }
 
     const handleMenuClick = (event: MouseEvent) =>{

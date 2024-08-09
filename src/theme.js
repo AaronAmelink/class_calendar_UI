@@ -1,6 +1,5 @@
 // A custom theme for this app
 import {createTheme} from "@mui/material";
-
 const dark = createTheme({
     components: {
         MuiCssBaseline: {
@@ -49,16 +48,15 @@ const dark = createTheme({
             paper: '#2a2a2a',
         },
         menu: {
-            main: '#004e58',
+            main: '#0096ab',
             settings: '#414141',
             button: '#545454',
-            selected: '#31616b'
+            selected: '#0096ab'
         },
         underline: {
-            main: '#004e58',
+            main: '#0096ab',
             secondary: '#787878',
         },
-        divider: '#787878',
         text:{
             primary:'#e3e3e3',
             secondary:'#d1d1d1'

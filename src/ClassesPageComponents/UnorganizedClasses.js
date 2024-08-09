@@ -1,11 +1,11 @@
 import Box from "@mui/material/Box";
-import {Button, Grid, Paper} from "@mui/material";
+import { Grid, Paper} from "@mui/material";
 import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
 import Divider from "@mui/material/Divider";
 import ClassChip from "./ClassChip";
-import {Add} from "@mui/icons-material";
 import Stack from "@mui/material/Stack";
+import {useSelector} from "react-redux";
+import StackItem from "../ContentComponents/StackItem";
 
 
 function CenteredChip({code, id}) {
@@ -22,6 +22,9 @@ function CenteredChip({code, id}) {
 }
 
 export default function UnorganizedClasses() {
+    const classes = useSelector((state) => state.classData.classes);
+
+
     return (
         <Paper elevation={0}
                variant='outlined'
@@ -40,27 +43,11 @@ export default function UnorganizedClasses() {
                 <Grid container columnSpacing={2} rowSpacing={1} display="flex"
                       justifyContent="center"
                       sx={{overflow: 'auto', height:1/1.4, my:2}}>
-                    <CenteredChip code='CS 101' id='1'/>
-                    <CenteredChip code='CS 101' id='1'/>
-                    <CenteredChip code='CS 101' id='1'/>
-                    <CenteredChip code='CS 101' id='1'/>
-                    <CenteredChip code='CS 101' id='1'/>
-                    <CenteredChip code='CS 101' id='1'/>
-                    <CenteredChip code='CS 101' id='1'/>
-                    <CenteredChip code='CS 101' id='1'/>
-                    <CenteredChip code='CS 101' id='1'/>
-                    <CenteredChip code='CS 101' id='1'/>
-                    <CenteredChip code='CS 101' id='1'/>
-                    <CenteredChip code='CS 101' id='1'/>
-                    <CenteredChip code='CS 101' id='1'/>
-                    <CenteredChip code='CS 101' id='1'/>
-                    <CenteredChip code='CS 101' id='1'/>
-                    <CenteredChip code='CS 101' id='1'/>
-                    <CenteredChip code='CS 101' id='1'/>
-                    <CenteredChip code='CS 101' id='1'/>
-                    <CenteredChip code='CS 101' id='1'/>
-                    <CenteredChip code='CS 101' id='1'/>
-                    <CenteredChip code='CS 101' id='1'/>
+                    {
+                        classes.map(classItem => {
+                            return(<CenteredChip code={classItem.courseCode} id={classItem.id}/>);
+                        })
+                    }
                 </Grid>
             </Stack>
         </Paper>

@@ -9,6 +9,7 @@ import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import UnorganizedClasses from "../ClassesPageComponents/UnorganizedClasses";
 import Stack from "@mui/material/Stack";
+import ColorPicker from "./ColorPicker";
 
 export default function AddAndOrganize(props) {
     const data = useLoaderData();
@@ -17,10 +18,10 @@ export default function AddAndOrganize(props) {
     return (
         <Box sx={{p:3, height:1}}>
             <Grid container spacing={2} sx={{height:'90vh'}}>
-                <Grid item xs sx={{height:1/3}}>
+                <Grid item xs={6} sx={{height:1/3}}>
                     <AddNewClassMenu/>
                 </Grid>
-                <Grid item xs sx={{height:1/3}}>
+                <Grid item xs={6} sx={{height:1/3}}>
                     <UnorganizedClasses/>
                 </Grid>
             </Grid>

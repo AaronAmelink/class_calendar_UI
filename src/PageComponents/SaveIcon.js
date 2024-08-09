@@ -8,8 +8,10 @@ import {useDispatch, useSelector} from "react-redux";
 import {setSaved} from "../slices/pageDataSlice";
 import {useLocation} from "react-router-dom";
 import pageURLs from "./pageURLs";
-export default function SaveIcon(props) {
-    const saved = useSelector((state) => state.pageData.saved);
+import httpHelper from "../managment/httpHelper";
+import {clearChanges} from "../slices/siteDataSlice";
+export default function SaveIcon() {
+    const changes = useSelector((state) => state.siteData.changes);
     const dispatch = useDispatch();
     const [counter, setCounter] = useState(5);
     const location = useLocation();
@@ -17,11 +19,11 @@ export default function SaveIcon(props) {
     useEffect( () => {
         if (counter === 0) {
             setCounter(5);
-            if (!saved) {
+            if (changes.length > 0) {
                 if (location.pathname.includes(pageURLs.page)) {
-                    DocumentManager.maintainChanges();
+                    httpHelper.submitChanges(changes);
                 }
-                dispatch(setSaved(true));
+                dispatch(clearChanges());
             }
         }
 
@@ -46,7 +48,7 @@ export default function SaveIcon(props) {
 
     return (
         <Box sx={{color:"icon.main"}}>
-            {saved ? <CheckIcon/> : <CachedIcon/>}
+            {changes.length === 0 ? <CheckIcon/> : <CachedIcon/>}
         </Box>
     );
 }

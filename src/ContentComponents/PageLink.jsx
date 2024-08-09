@@ -22,7 +22,7 @@ export function PageLink({pageID, buttonVariant, overwritePageName, color}) {
 
     return (
         <Link to={pageURLs.page + `/${pageID}`} key={pageName} onClick={handleClick}>
-            <Button variant={buttonVariant} color={color ? color : 'secondary'}>
+            <Button variant={buttonVariant} color={color ? color : 'icon'}>
                 {overwritePageName ? overwritePageName : pageName}
             </Button>
         </Link>
