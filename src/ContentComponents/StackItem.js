@@ -62,22 +62,22 @@ function StackItemContainer(props) {
 export function RenderObject({id, type, index}) {
     if (type === "text"){
         return(
-            <TextStackItem id={id} index={index}/>
+            <TextStackItem id={id} index={index} key={'rot-' + id}/>
         );
     }
     if (type === "divider"){
         return(
-            <DividerStackItem/>
+            <DividerStackItem key={'rod-' + id}/>
         );
     }
     if (type === "checkbox"){
         return(
-            <CheckboxStackItem index={index} id={id}/>
+            <CheckboxStackItem index={index} id={id} key={'rocb-' + id}/>
         );
     }
     if (type === "page"){
         return(
-            <PageButtonStackItem id={id}/>
+            <PageButtonStackItem id={id} key={'rop-' + id}/>
         );
     }
 
@@ -89,7 +89,8 @@ export default function StackItem({id, type, index}) {
         <StackItemContainer 
             id={id}
             index={index}
-            RenderObject={<RenderObject id={id} type={type} index={index}/>}
+            key={'container' + '-' + id}
+            RenderObject={<RenderObject id={id} type={type} index={index} key={'ro' + '-' + id}/>}
         />
     );
 }

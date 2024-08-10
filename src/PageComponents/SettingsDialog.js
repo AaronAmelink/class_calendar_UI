@@ -182,9 +182,9 @@ export default function SettingsDialog({handleClose, open}) {
                     divider={<Divider flexItem variant="middle"/>}
                 >
                     {
-                        Object.keys(menuItems).map((key) => {
+                        Object.keys(menuItems).map((index, key) => {
                             return (
-                                <MenuButton theme={theme} item={key} setSelected={setSelected} selected={selected === key}/>
+                                <MenuButton theme={theme} item={key} setSelected={setSelected} selected={selected === key} key={'setting-' + index}/>
                             );
                         })
                     }

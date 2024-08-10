@@ -5,7 +5,8 @@ const initialState = {
     saved: true,
     lastAccessedPage: { name: null, id: null },
     currentPage: {},
-    pages: {}
+    pages: {},
+    lastModifiedItemId: null
 }
 export const pageData = createSlice({
     name: 'pageData',
@@ -31,6 +32,7 @@ export const pageData = createSlice({
         },
         updatePageContent(state, action) {
             let index = state.currentPage.content.findIndex(content => content.id === action.payload.id);
+            state.lastModifiedItemId = action.payload.id;
             state.currentPage.content[index] = action.payload;
         },
         setCurrentPage(state, action) {
@@ -54,16 +56,17 @@ export const makeContentSelector = () => {
     return selectContent;
 }
 
-export const getContentBasics = createSelector(state => state.pageData.currentPage, currentPage => {
-    const mappedContent = currentPage.content?.map(content => {
+export const getLastModifiedItemId = (state) => state.pageData.lastModifiedItemId;
+export const getContentBasics = state => {
+    const mappedContent = state.pageData.currentPage?.content?.map(content => {
         return {
             id: content.id,
             type: content.type
         }
     });
-    console.log('ello'); //note how every key press ello gets logged. this is incorrect
     return mappedContent ? mappedContent : [];
-});
+}
+
 
 export const getPageID = state => {
     return state.currentPage?._id;
