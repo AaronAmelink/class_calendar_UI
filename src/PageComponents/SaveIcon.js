@@ -1,11 +1,9 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
-import DocumentManager from '../managment/documentManager';
 import {useEffect, useState} from "react";
 import CachedIcon from '@mui/icons-material/Cached';
 import CheckIcon from '@mui/icons-material/Check';
 import {useDispatch, useSelector} from "react-redux";
-import {setSaved} from "../slices/pageDataSlice";
 import {useLocation} from "react-router-dom";
 import pageURLs from "./pageURLs";
 import httpHelper from "../managment/httpHelper";
@@ -19,9 +17,9 @@ export default function SaveIcon() {
     useEffect( () => {
         if (counter === 0) {
             setCounter(5);
-            if (changes.length > 0) {
+            if (Object.keys(changes).length > 0) {
                 if (location.pathname.includes(pageURLs.page)) {
-                    httpHelper.submitChanges(changes);
+                    //httpHelper.submitChanges(changes);
                 }
                 dispatch(clearChanges());
             }
@@ -48,7 +46,7 @@ export default function SaveIcon() {
 
     return (
         <Box sx={{color:"icon.main"}}>
-            {changes.length === 0 ? <CheckIcon/> : <CachedIcon/>}
+            {Object.keys(changes).length === 0 ? <CheckIcon/> : <CachedIcon/>}
         </Box>
     );
 }

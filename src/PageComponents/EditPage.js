@@ -5,46 +5,39 @@ import Stack from "@mui/material/Stack";
 import StackItem from "../ContentComponents/StackItem";
 import {useEffect, useState} from "react";
 import {
-    getContentBasics, getPageID,
-    setCurrentPage, getLastModifiedItemId
+    getContentBasics,
+    getLastModifiedItemId
 } from '../slices/pageDataSlice'
-import {useDispatch, useSelector} from 'react-redux';
-import {useLoaderData} from "react-router-dom";
+import { useSelector} from 'react-redux';
 import {store} from '../slices/store';
+import {useParams} from "react-router-dom";
 
 export default function EditPage() {
-    const dispatch = useDispatch();
-    const data = useLoaderData();
-    const pageID = useSelector(getPageID);
+    const params = useParams();
     const lastModifiedItemId = useSelector(getLastModifiedItemId);
     const [idArr, setIdArr] = useState(getContentBasics(store.getState()));
-
-    useEffect(() => {
-        if (data) {
-            dispatch(setCurrentPage(data));
-        }
-    }, [data]);
 
     useEffect(() => {
         console.log('lastModifiedItemId useEffect');
         setIdArr(getContentBasics(store.getState()));
     }, [lastModifiedItemId]);
 
+
     let index = -1;
     return (
     <div>
         {
-            data ?
+            idArr ?
             (
                 <div>
                     <Grid container spacing={2}>
                         <Grid item xs={10}>
                             <Typography variant="h4" gutterBottom sx={{color:"text.secondary", m:3}}>
-                                <PageName pageID={pageID}/>
+                                <PageName pageID={params.pageID}/>
                             </Typography>
                         </Grid>
                         <Grid item>
-                            <PropertiesMenu pageID={pageID}/>
+                            <PropertiesMenu pageID={params.pageID}/>
                         </Grid>
                     </Grid>
                     <Stack spacing={0} sx={{ml:3, mt:3}}>

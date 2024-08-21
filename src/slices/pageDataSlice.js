@@ -1,12 +1,21 @@
-import {createSelector, createSlice} from '@reduxjs/toolkit'
+import {createAsyncThunk, createSelector, createSlice} from '@reduxjs/toolkit'
+import httpHelper from "../managment/httpHelper";
+export const fetchPage = createAsyncThunk('pageData/get', async({pageID}) => {
+    return await httpHelper.getPage(pageID);
+});
+
+
 
 const initialState = {
     loaded: false,
     saved: true,
     lastAccessedPage: { name: null, id: null },
-    currentPage: {},
-    pages: {},
-    lastModifiedItemId: null
+    currentPage: null,
+    pages: [],
+    localChanges: [],
+    lastModifiedItemId: null,
+    lastModifiedPropertyId: null,
+    isClass: null
 }
 export const pageData = createSlice({
     name: 'pageData',
@@ -25,38 +34,107 @@ export const pageData = createSlice({
             state.currentPage.properties = action.payload;
         },
         setCurrentPageName(state, action) {
-            state.currentPage.name = action.payload;
+            console.log(action.payload);
+            state.currentPage.page_name = action.payload;
         },
-        setCurrentPageContent(state, action) {
-            state.currentPage.content = action.payload;
+        addCurrentPageToPages(state) {
+            state.pages.push(state.currentPage);
         },
         updatePageContent(state, action) {
             let index = state.currentPage.content.findIndex(content => content.id === action.payload.id);
-            state.lastModifiedItemId = action.payload.id;
             state.currentPage.content[index] = action.payload;
         },
+        updatePageProperty(state, action) {
+            let index = state.currentPage.properties.findIndex(property => property.id === action.payload.id);
+            state.currentPage.properties[index] = action.payload;
+        },
         setCurrentPage(state, action) {
+            state.isClass = action.payload.isClass;
             state.currentPage = action.payload;
+            state.lastAccessedPage = {id: action.payload._id, name: action.payload.page_name};
+            state.lastModifiedItemId = `changed page ${action.payload._id}`;
         },
         addPageToState(state, action) {
-            state.pages[action.payload._id] = action.payload;
+            let index = state.pages.findIndex(page => page._id === action.payload._id);
+            if (index !== -1) {
+                state.pages[index] = action.payload;
+            } else {
+                state.pages.push(action.payload);
+            }
         },
         removePage(state, action) {
             delete state.pages[action.payload];
         },
-    },
+        removePropertyFromState(state, action) {
+            let index = state.currentPage.properties.findIndex(property => property.id === action.payload);
+            state.currentPage.properties.splice(index, 1);
+            state.lastModifiedPropertyId = `removed ${action.payload}`;
+        },
+        addPropertyToState(state, action) {
+            state.currentPage.properties.push(action.payload);
+            state.lastModifiedPropertyId = action.payload.id;
+        },
+        removeContentFromState(state, action) {
+            let index = state.currentPage.content.findIndex(content => content.id === action.payload);
+            state.currentPage.content.splice(index, 1);
+            state.lastModifiedItemId = `removed ${action.payload}`;
+        },
+        addContentToState(state, action) {
+            state.currentPage.content.splice(action.payload.index, 0, action.payload.content);
+            state.lastModifiedItemId = action.payload.content.id;
+        },
+        changePage(state, action) {
+            //action: {newPageID: ''}
+            let oldPage = state.currentPage;
+            let newPage = state.pages.find(page => page._id === action.payload.newPageID);
+            state.currentPage = newPage;
+            state.lastAccessedPage = {id: action.payload.newPageID, name: newPage.page_name};
+            state.pages.push(oldPage);
+            state.isClass = newPage.isClass;
+            state.lastModifiedItemId = `changed page ${action.payload.newPageID}`;
+            state.lastModifiedPropertyId = `changed page ${action.payload.newPageID}`;
+        }
+    }
 })
 
 export const makeContentSelector = () => {
     const selectContent = createSelector(
         [state => state.pageData.currentPage?.content, (state, id) => id],
         (content, id) => {
-            return content.filter(item => item?.id === id)[0];
+            return content.find(item => item?.id === id);
         })
     return selectContent;
 }
 
+export const makePropertySelector = () => {
+    const selectProperty = createSelector(
+        [state => state.pageData.currentPage?.properties, state=> state.classData.classes, (state, id) => id, state => state.pageData.isClass],
+        (properties,classes, id, isClass) => {
+            if (!isClass) {
+                return properties.find(item => item?.id === id);
+            } else {
+                return classes.find(item => item?.id === id);
+            }
+        })
+    return selectProperty;
+}
+export const getPropertyBasics = (state) => {
+    if (state.pageData.isClass) {
+        return state.classData.classes?.map(classItem => classItem.id)
+    } else {
+        return state.pageData.currentPage?.properties?.map(property => {
+            return {
+                id: property.id,
+                type: property.type
+            }
+        });
+    }
+}
+
+export const selectPageName = state => state.pageData.currentPage?.page_name;
+export const getPageName = (state, id) => state.pageData.pages[id].page_name;
 export const getLastModifiedItemId = (state) => state.pageData.lastModifiedItemId;
+export const getLastModifiedPropertyId = (state) => state.pageData.lastModifiedPropertyId;
 export const getContentBasics = state => {
     const mappedContent = state.pageData.currentPage?.content?.map(content => {
         return {
@@ -67,27 +145,25 @@ export const getContentBasics = state => {
     return mappedContent ? mappedContent : [];
 }
 
+export const getPageID = (state) => state.pageData.lastAccessedPage?.id;
 
-export const getPageID = state => {
-    return state.currentPage?._id;
-}
+
 
 export const {
-    setLoaded,
     setSaved,
     setLastAccessedPage,
     addPageToState,
     removePage,
-    setCurrentPageContent,
     setCurrentPageName,
-    setCurrentPageProperties,
     setCurrentPage,
-    addChangeLocally,
-    clearLocalChanges,
-    updatePageContent
+    addCurrentPageToPages,
+    updatePageContent,
+    updatePageProperty,
+    removePropertyFromState,
+    removeContentFromState,
+    addContentToState,
+    addPropertyToState,
+    changePage
 } = pageData.actions
 
-export const getContent = id => state => {
-    return state.currentPage?.content?.find(content => content.id === id);
-}
 export default pageData.reducer

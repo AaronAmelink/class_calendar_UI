@@ -7,7 +7,6 @@ import Stack from "@mui/material/Stack";
 import {useDispatch} from "react-redux";
 import {addClass} from "../slices/classDataSlice";
 import Typography from "@mui/material/Typography";
-import httpHelper from "../managment/httpHelper";
 const { v4: uuidv4 } = require('uuid');
 
 function ClassInputField({icon, label, required, numbersOnly, CSV, value, setValue, error}) {
@@ -93,7 +92,8 @@ export default function AddNewClassMenu() {
             creditWorth: creditWorth,
             preRequisites: preRequisites,
             yearsOffered: yearsOffered,
-            id: id
+            id: id,
+            planned: className
         };
         dispatch(addClass(newClass));
         console.log(newClass);

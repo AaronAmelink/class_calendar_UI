@@ -1,20 +1,16 @@
-import {useEffect, useState} from "react";
-import DocumentManager from "../managment/documentManager";
-import {TextField, Typography} from "@mui/material";
-import {setSaved} from "../slices/pageDataSlice";
-import {useDispatch} from "react-redux";
+import {TextField} from "@mui/material";
+import {selectPageName} from "../slices/pageDataSlice";
+import {useSelector} from "react-redux";
+import usePageData from "../customHooks/pageDataHook";
+import {useParams} from "react-router-dom";
 
-export default function PageName(props) {
-    const [pageName, setPageName] = useState(DocumentManager.getCurrentPageName());
-    const dispatch = useDispatch();
-    useEffect(() => {
-        setPageName(DocumentManager.getCurrentPageName());
-    }, [props.pageID]);
+export default function PageName() {
+    const pageName = useSelector(selectPageName);
+    const { updateName } = usePageData();
+    const params = useParams();
 
     function handleChange(value) {
-        setPageName(value);
-        DocumentManager.updatePageName(value);
-        dispatch(setSaved(false));
+        updateName(value, params.pageID);
     }
 
     return(

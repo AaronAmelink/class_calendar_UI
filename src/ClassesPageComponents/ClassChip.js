@@ -7,13 +7,16 @@ import pageURLs from "../PageComponents/pageURLs";
 import * as React from "react";
 import Stack from "@mui/material/Stack";
 
-export default function ClassChip({id, code}) {
-    const navigate = useNavigate();
+export default function ClassChip({id, code, handleClick}) {
+
+    function onClick() {
+        handleClick(id);
+    }
 
     return (
-        <Paper elevation={0} variant='outlined' style={{ border: '2px solid' }} sx={{bgcolor:'icon.main', boxShadow:5, borderRadius:9, p:0.1, minWidth:1}}>
+        <Paper elevation={0} variant='outlined' style={{ border: '2px solid' }} sx={{bgcolor:'icon.main', boxShadow:5, borderRadius:9, p:0.1}}>
             <Stack direction='row'>
-                <IconButton>
+                <IconButton onClick={onClick}>
                     <MoreVertIcon/>
                 </IconButton>
                 <Link to={pageURLs.page + `/${id}`}>

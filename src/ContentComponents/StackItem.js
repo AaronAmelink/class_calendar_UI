@@ -10,8 +10,10 @@ import DividerStackItem from "./StackItems/DividerStackItem";
 import CheckboxStackItem from "./StackItems/CheckboxStackItem";
 import PageButtonStackItem from "./StackItems/PageButtonStackItem";
 import usePageData from "../customHooks/pageDataHook";
+import {useParams} from "react-router-dom";
 function StackItemContainer(props) {
     const id = props.id;
+    const params = useParams();
     const {removeContent} = usePageData();
     const [isGarbageVisible, setIsGarbageVisible] = useState(false);
     const index =  props.index;
@@ -25,7 +27,7 @@ function StackItemContainer(props) {
     }
 
     const handleDeleteClick = () => {
-        removeContent(id);
+        removeContent(id, params.pageID);
     }
 
     return (
@@ -84,7 +86,6 @@ export function RenderObject({id, type, index}) {
 }
 
 export default function StackItem({id, type, index}) {
-    console.log('rerender content');
     return (
         <StackItemContainer 
             id={id}

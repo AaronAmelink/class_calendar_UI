@@ -2,28 +2,17 @@ import {Button} from "@mui/material";
 import {Link} from "react-router-dom";
 import * as React from "react";
 import {useDispatch, useSelector} from "react-redux";
-import {setLastAccessedPage} from "../slices/pageDataSlice";
+import {getPageName, setLastAccessedPage} from "../slices/pageDataSlice";
 import pageURLs from "../PageComponents/pageURLs";
 import DocumentManager from "../managment/documentManager";
 import {useEffect, useState} from "react";
 
 export function PageLink({pageID, buttonVariant, overwritePageName, color}) {
-    const dispatch = useDispatch();
-    const dataLoaded = useSelector((state) => state.pageData.loaded);
-    const [pageName, setPageName] = useState('loading');
-    useEffect(() => {
-        if (dataLoaded) {
-            setPageName(pageID === DocumentManager.currentPage._id ? DocumentManager.currentPage.page_name : DocumentManager.pages[pageID].page_name);
-        }
-    }, [dataLoaded]);
-    function handleClick() {
-        dispatch(setLastAccessedPage({ id: pageID, name: pageName }));
-    }
-
+    const pageName = useSelector((state) => state.pageData.pages.find(page => page._id === pageID))?.page_name;
     return (
-        <Link to={pageURLs.page + `/${pageID}`} key={pageName} onClick={handleClick}>
+        <Link to={pageURLs.page + `/${pageID}`} key={pageName}>
             <Button variant={buttonVariant} color={color ? color : 'icon'}>
-                {overwritePageName ? overwritePageName : pageName}
+                {overwritePageName ?? pageName}
             </Button>
         </Link>
     )

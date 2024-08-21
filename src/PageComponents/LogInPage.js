@@ -68,7 +68,7 @@ function LogInPage(){
                 console.log("logged in");
                 window.sessionStorage.setItem("authToken", 'Bearer ' + res.signature);
                 window.sessionStorage.setItem("user_id", res.userProfile._id);
-                navigate(pageURLs.page + '/7e1f8abc-a768-4e7e-942d-6d5cb8548fdc');
+                navigate(pageURLs.classes);
             }
             if (res?.auth === false){
                 setWrongPassword(true);

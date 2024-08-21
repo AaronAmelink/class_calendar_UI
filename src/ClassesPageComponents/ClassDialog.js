@@ -1,13 +1,19 @@
 import {useSelector} from "react-redux";
-import {useState} from "react";
+import {useMemo} from "react";
 import Dialog from "@mui/material/Dialog";
 import Stack from "@mui/material/Stack";
 import Divider from "@mui/material/Divider";
 import * as React from "react";
+import {makeClassSelector} from "../slices/classDataSlice";
+import Typography from "@mui/material/Typography";
 
 
-export default function ClassDialog({classID}) {
-    const selectedClass = useSelector((state) => state.classData.selectedClass);
+export default function ClassDialog({classID, open, handleClose}) {
+    const classSelector = useMemo(makeClassSelector, [])
+
+    const selectedClass = useSelector(state =>
+        classSelector(state, classID)
+    )
 
     return (
         <Dialog
@@ -21,20 +27,19 @@ export default function ClassDialog({classID}) {
                 }
             }
         >
-            <Stack
-                maxWidth="md"
-                direction="row"
-                useFlexGap
-                divider={<Divider flexItem orientation="vertical" variant="middle"/>}
-                spacing={4}
-                sx={{m:2, xs: 1, sm: 2}}
-            >
-                <SideMenu theme={theme} setSelected={setSelected} selected={selected}/>
-                {
-                    menuItems[selected].component
-                }
-            </Stack>
+            {
+                classID ?
+                    (<Stack
+                        maxWidth="md"
+                        useFlexGap
+                        spacing={2}
+                        sx={{p:2}}
+                    >
+                        <Typography variant='h3'>{ selectedClass.className }</Typography>
+                        <Typography variant='subtitle1'>{ selectedClass.courseCode }</Typography>
+                        <Divider/>
+                    </Stack>) : (<div></div>)
+            }
         </Dialog>
-    );
-
+    )
 }

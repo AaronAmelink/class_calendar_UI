@@ -6,50 +6,44 @@ import * as React from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
 import IconButton from "@mui/material/IconButton";
 import NameValue from "./NameValue";
+import usePageData from "../../customHooks/pageDataHook";
+import {useParams} from "react-router-dom";
 
-export default function Property(props){ // props is the referenced for passed down variables. Naming is confusing.
-    const type = props.property.type;
-    const id = props.property.id;
-
-    const Value = () => {
-        if (type === "text") {
-            return (<TextValue id={id}/>);
-        }
-    }
-
-    const Name = () => {
-        return (<NameValue id={id}/>);
-    }
-
+export default function Property({id, type}){
+    const {removeProperty} = usePageData();
+    const params = useParams();
     function handleDeleteClick() {
-        props.removeProperty(id); //function from properties menu
+        removeProperty(id, params.pageID);
     }
 
-    if (props.property.type === "text"){
-        return (
-            <Stack>
-                <Grid container spacing={2}>
-                    <Grid>
-                        <Name/>
-                    </Grid>
-                    <Grid>
-                        <Divider orientation="vertical" variant="fullWidth" sx={{ bgcolor: "secondary.main" }}/>
-                    </Grid>
-                    <Grid>
-                        <Value/>
-                    </Grid>
-                    <Grid>
-                        <IconButton aria-label="delete" sx={{color:"text.main", mt:1}} onClick={handleDeleteClick}>
-                            <DeleteIcon />
-                        </IconButton>
-                    </Grid>
+    return (
+        <Stack>
+            <Grid container spacing={2}>
+                <Grid>
+                    <Name id={id}/>
                 </Grid>
-            </Stack>
-        );
-    }
-    else{
-        return (<null/>);
-    }
+                <Grid>
+                    <Divider orientation="vertical" variant="fullWidth" sx={{ bgcolor: "secondary.main" }}/>
+                </Grid>
+                <Grid>
+                    <Value id={id} type={type}/>
+                </Grid>
+                <Grid>
+                    <IconButton aria-label="delete" sx={{color:"text.main", mt:1}} onClick={handleDeleteClick}>
+                        <DeleteIcon />
+                    </IconButton>
+                </Grid>
+            </Grid>
+        </Stack>
+    );
+}
 
+function Value({id, type}) {
+    if (type === 'text') {
+        return (<TextValue id={id}/>);
+    }
+}
 
+function Name({id}) {
+    return (<NameValue id={id}/>);
 }

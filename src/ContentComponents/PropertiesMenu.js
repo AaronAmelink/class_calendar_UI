@@ -7,35 +7,22 @@ import Grid from "@mui/material/Unstable_Grid2"
 import IconButton from "@mui/material/IconButton";
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import Stack from "@mui/material/Stack";
-import DocumentManager from "../managment/documentManager";
 import Property from "./PropertiesComponents/Property";
 import AddPropertyMenu from "./PropertiesComponents/AddPropertyMenu";
-import {setSaved} from "../slices/pageDataSlice";
-import {useDispatch} from "react-redux";
+import {useSelector} from "react-redux";
+import {store} from "../slices/store";
+import {getLastModifiedPropertyId, getPropertyBasics} from "../slices/pageDataSlice";
 
 export default function PropertiesMenu(props) {
     const [menuVisible, setMenuVisible] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
-    const dispatch = useDispatch();
-    const [properties, SetProperties] = useState([...DocumentManager.getCurrentPageProperties()]);
 
+    const lastModifiedItemId = useSelector(getLastModifiedPropertyId);
+    const [idArr, setIdArr] = useState(getPropertyBasics(store.getState()));
+    console.log(idArr);
     useEffect(() => {
-        SetProperties([...DocumentManager.getCurrentPageProperties()]);
-    }, [props.pageID]);
-
-
-    const updateProperties = () => {
-        SetProperties([...DocumentManager.getCurrentPageProperties()]);
-    }
-
-
-
-    function removeProperty(id){
-        DocumentManager.removeProperty(id);
-        dispatch(setSaved(false));
-        SetProperties([...DocumentManager.getCurrentPageProperties()]);
-    }
-
+        setIdArr(getPropertyBasics(store.getState()));
+    }, [lastModifiedItemId]);
     const handleMenuClick = (event) =>{
         if (menuVisible){
             handleMenuClose(event);
@@ -73,23 +60,19 @@ export default function PropertiesMenu(props) {
                 onClose={handleMenuClose}
                 anchorEl={anchorEl}
                 anchorOrigin=	{{ vertical: 'bottom', horizontal: 'left', }}
-                sx={
-                    { mt: "1px", "& .MuiMenu-paper":
-                            { backgroundColor: "menu.main", },
-                    }
-                }
-
+                sx={{ mt: "1px"}}
             >
-                <MenuItem>
-                    <Stack>
-                        {
-                            properties.map(prop => {
-                                return (<Property property={prop} removeProperty={removeProperty} key={prop?.id}/>);
-                            })
-                        }
-                    </Stack>
-                </MenuItem>
-                <AddPropertyMenu updateProperties={updateProperties}/>
+                {
+                    (idArr.length > 0) ?
+                        (idArr.map(entry => {
+                            return(
+                                <MenuItem key={entry.id}>
+                                    <Property id={entry.id} type={entry.type}/>
+                                </MenuItem>
+                            )
+                        }) ) : (<div></div>)
+                }
+                <AddPropertyMenu/>
             </Menu>
         </Grid>
 

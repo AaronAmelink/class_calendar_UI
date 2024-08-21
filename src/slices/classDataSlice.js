@@ -1,8 +1,7 @@
-import {createSlice} from '@reduxjs/toolkit'
+import {createSelector, createSlice} from '@reduxjs/toolkit'
 
 const initialState = {
-    classes: [],
-    selectedClass : {}
+    classes: []
 }
 const classData = createSlice({
     name: 'classData',
@@ -23,7 +22,17 @@ const classData = createSlice({
             removeClass(id);
         }
     }
-})
+});
+
+export const makeClassSelector = () => {
+    const selectClass = createSelector(
+        [state => state.classData.classes, (state, id) => id],
+        (classes, id) => {
+            return classes.filter(item => item?.id === id)[0];
+        })
+    return selectClass;
+}
+
 
 export const { addClass, removeClass, setSelectedClass} = classData.actions
 export default classData.reducer

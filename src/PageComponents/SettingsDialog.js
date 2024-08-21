@@ -132,6 +132,7 @@ function MenuButton({theme, item, setSelected, selected}) {
     function handleClick() {
         setSelected(item);
     }
+    console.log(item);
     return (
         <Button
             style=
@@ -182,7 +183,7 @@ export default function SettingsDialog({handleClose, open}) {
                     divider={<Divider flexItem variant="middle"/>}
                 >
                     {
-                        Object.keys(menuItems).map((index, key) => {
+                        Object.keys(menuItems).map((key, index) => {
                             return (
                                 <MenuButton theme={theme} item={key} setSelected={setSelected} selected={selected === key} key={'setting-' + index}/>
                             );

@@ -33,12 +33,13 @@ const siteData = createSlice({
             state.theme.color = newColor;
         },
         addChange(state, action){
-            let foundIndex = state.changes.findIndex((c) => c.id === action.payload.id);
-            if (foundIndex !== -1) {
-                state.changes[foundIndex] = action.payload;
-            } else {
+            let index = state.changes.findIndex((c) => c.id === action.payload.id);
+            if (index === -1){
                 state.changes.push(action.payload);
+            } else {
+                state.changes[index] = action.payload;
             }
+            state.saved = false;
         },
         clearChanges(state){
             state.changes = [];

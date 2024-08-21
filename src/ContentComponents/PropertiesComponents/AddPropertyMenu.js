@@ -7,20 +7,22 @@ import Stack from "@mui/material/Stack";
 import {useState} from "react";
 import ShortTextIcon from '@mui/icons-material/ShortText';
 import DocumentManager from '../../managment/documentManager';
-import {useDispatch} from "react-redux";
-import {setSaved} from "../../slices/pageDataSlice";
+import {useParams} from "react-router-dom";
+import usePageData from "../../customHooks/pageDataHook";
 
-export default function AddPropertyMenu(props) {
-    const dispatch = useDispatch();
+export default function AddPropertyMenu() {
     const [menuVisible, setMenuVisible] = useState(false);
     const [anchorEl, setAnchorEl] = React.useState(null);
+    const { addProperty } = usePageData();
+    const params = useParams();
 
 
     const handleTextAddClick = ()=> {
-        //need to fix state delay
-        DocumentManager.addTextProperty();
-        dispatch(setSaved(false));
-        props.updateProperties();
+        addProperty({
+            type: 'text',
+            name: '',
+            value: ''
+        }, params.id);
     }
     const handleMenuClose= (event) => {
         setMenuVisible(false);

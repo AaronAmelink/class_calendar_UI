@@ -6,15 +6,17 @@ import ClassChip from "./ClassChip";
 import Stack from "@mui/material/Stack";
 import {useSelector} from "react-redux";
 import StackItem from "../ContentComponents/StackItem";
+import {useState} from "react";
+import ClassDialog from "./ClassDialog";
 
 
-function CenteredChip({code, id}) {
+function CenteredChip({code, id, handleClick}) {
     return (
         <Grid item xs='auto'>
             <Box
                 justifyContent="center"
                 alignItems="center">
-                <ClassChip code={code} id={id}/>
+                <ClassChip code={code} id={id} handleClick={handleClick}/>
             </Box>
         </Grid>
 
@@ -23,7 +25,19 @@ function CenteredChip({code, id}) {
 
 export default function UnorganizedClasses() {
     const classes = useSelector((state) => state.classData.classes);
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const [selectedClassID, setSelectedClassID] = useState(null);
 
+    function handleDialogClose() {
+        setDialogOpen(false);
+    }
+
+    function handleChipClick(courseID)  {
+        setSelectedClassID(courseID);
+        setDialogOpen(true);
+        console.log(courseID);
+        return courseID;
+    }
 
     return (
         <Paper elevation={0}
@@ -32,6 +46,7 @@ export default function UnorganizedClasses() {
                display="flex"
                justifyContent="center"
                alignItems="center">
+            <ClassDialog classID={selectedClassID} handleClose={handleDialogClose} open={dialogOpen} />
             <Stack container sx={{height:1}} divider={<Divider variant={'middle'}/>}>
                 <Box
                     sx={{width:1, height:1/8, my:2}}
@@ -45,7 +60,9 @@ export default function UnorganizedClasses() {
                       sx={{overflow: 'auto', height:1/1.4, my:2}}>
                     {
                         classes.map(classItem => {
-                            return(<CenteredChip code={classItem.courseCode} id={classItem.id}/>);
+                            if (!classItem.planned) {
+                                return(<CenteredChip code={classItem.courseCode} id={classItem.id} handleClick={handleChipClick}/>);
+                            }
                         })
                     }
                 </Grid>

@@ -1,21 +1,20 @@
-import {useDispatch, useSelector} from "react-redux";
+import {useDispatch} from "react-redux";
 import {
     addPageToState,
     setCurrentPageName,
-    setCurrentPageProperties, updatePageContent,
+    updatePageContent, updatePageProperty,
+    removePropertyFromState, removeContentFromState, addPropertyToState, addContentToState
 } from "../slices/pageDataSlice";
 import {addChange} from "../slices/siteDataSlice";
+const { v4: uuidv4 } = require('uuid');
 
 function usePageData() {
     const dispatch= useDispatch();
-    const currentPage = useSelector((state) => state.pageData.currentPage);
 
-
-    function updateContent(content, pageId) {
-        dispatch(updatePageContent(content));
-        dispatch(addChange({type: "content", content: content, pageID: pageId}));
+    function updateContent(content, pageId, contentId) {
+        dispatch(updatePageContent({...content, id: contentId}));
+        dispatch(addChange({type: "content", id: contentId, pageID: pageId, content: content}));
     }
-
     function addPage(referralID, pageID, name) {
         let newPage = {
             _id : pageID,
@@ -29,33 +28,35 @@ function usePageData() {
         dispatch(addChange({type: "page", page: newPage}));
     }
 
-    function addContent(referralIndex, content, pageId) {
-        dispatch(addChange({type: "content", content: content, pageID: pageId, insertion: referralIndex}));
-        if (content.type === "page") {
-            addPage(pageId, content.linkedPageID, content.value);
-        }
+    function removeContent(id, pageID) {
+        dispatch(addChange({type: "content", removal: true, id: id, pageID: pageID}));
+        dispatch(removeContentFromState(id));
     }
-
-    function removeContent(id) {
-        dispatch(addChange({type: "content", removal: true, id: id}));
-
+    function removeProperty(id, pageID){
+        dispatch(addChange({type: "property", removal: true, id: id, pageID: pageID}));
+        dispatch(removePropertyFromState(id));
+    }
+    function addProperty(property, pageID) {
+        const newId = uuidv4();
+        dispatch(addChange({type: "property", property: {...property, id: newId}, pageID: pageID}));
+        dispatch(addPropertyToState({...property, id: newId}));
+    }
+    function addContent(content, pageID) {
+        dispatch(addChange({type: "content", content: content, pageID: pageID}));
+        dispatch(addContentToState(content));
     }
 
     function updateName(name, pageId) {
-        dispatch((setCurrentPageName(name)));
-        dispatch(addChange({type: "name", name: name, pageID: pageId}));
+        dispatch(setCurrentPageName(name));
+        dispatch(addChange({type: "name", name: name, id: pageId}));
     }
 
-    function updateProperties(properties, pageId) {
-        dispatch((setCurrentPageProperties(properties)));
-        dispatch(addChange({type: "properties", properties: properties, pageID: pageId}));
+    function updateProperty(property, pageId, propertyID) {
+        dispatch(updatePageProperty(property));
+        dispatch(addChange({type: "property", property: property, pageID: pageId, id: propertyID}));
     }
 
-    function getCurrentPageContent() {
-        return currentPage.content;
-    }
-
-    return {updateContent, updateName, updateProperties, getCurrentPageContent, addContent, removeContent}
+    return {updateContent, updateName, updateProperty, removeContent, removeProperty, addContent, addProperty};
 }
 
 export default usePageData;
