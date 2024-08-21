@@ -61,7 +61,7 @@ export default function PropertiesMenu() {
                 sx={{mt: "1px"}}
             >
                 {
-                    (idArr.length > 0) ?
+                    (idArr?.length > 0) ?
                         (idArr.map(entry => {
                             return (
                                 <MenuItem key={entry.id}>

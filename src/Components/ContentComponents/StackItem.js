@@ -11,18 +11,19 @@ import CheckboxStackItem from "./StackItems/CheckboxStackItem";
 import PageButtonStackItem from "./StackItems/PageButtonStackItem";
 import usePageData from "../../customHooks/pageDataHook";
 import {useParams} from "react-router-dom";
+
 function StackItemContainer(props) {
     const id = props.id;
     const params = useParams();
     const {removeContent} = usePageData();
     const [isGarbageVisible, setIsGarbageVisible] = useState(false);
-    const index =  props.index;
+    const index = props.index;
 
 
-    const handleMouseEnter = () =>{
+    const handleMouseEnter = () => {
         setIsGarbageVisible(true);
     }
-    const handleMouseExit = () =>{
+    const handleMouseExit = () => {
         setIsGarbageVisible(false);
     }
 
@@ -32,10 +33,10 @@ function StackItemContainer(props) {
 
     return (
         <Stack
-               onMouseOver={handleMouseEnter}
-               onMouseOut={handleMouseExit}
+            onMouseOver={handleMouseEnter}
+            onMouseOut={handleMouseExit}
         >
-            <div style={{border: '0px solid', height: '100%', width:'90%'}}>
+            <div style={{border: '0px solid', height: '100%', width: '90%'}}>
                 <Grid container spacing={0}>
                     <Grid xs={11.2}>
                         {props.RenderObject}
@@ -49,8 +50,8 @@ function StackItemContainer(props) {
                     </Grid>
                     <Grid xs={0.4}>
                         <Fade in={isGarbageVisible} style={{visibility: isGarbageVisible ? "visible" : "hidden"}}>
-                            <IconButton aria-label="delete" sx={{color:"text.main"}} onClick={handleDeleteClick}>
-                                <DeleteIcon />
+                            <IconButton aria-label="delete" sx={{color: "text.main"}} onClick={handleDeleteClick}>
+                                <DeleteIcon/>
                             </IconButton>
                         </Fade>
                     </Grid>
@@ -62,23 +63,23 @@ function StackItemContainer(props) {
 }
 
 export function RenderObject({id, type, index}) {
-    if (type === "text"){
-        return(
+    if (type === "text") {
+        return (
             <TextStackItem id={id} index={index} key={'rot-' + id}/>
         );
     }
-    if (type === "divider"){
-        return(
+    if (type === "divider") {
+        return (
             <DividerStackItem key={'rod-' + id}/>
         );
     }
-    if (type === "checkbox"){
-        return(
+    if (type === "checkbox") {
+        return (
             <CheckboxStackItem index={index} id={id} key={'rocb-' + id}/>
         );
     }
-    if (type === "page"){
-        return(
+    if (type === "page") {
+        return (
             <PageButtonStackItem id={id} key={'rop-' + id}/>
         );
     }
@@ -87,7 +88,7 @@ export function RenderObject({id, type, index}) {
 
 export default function StackItem({id, type, index}) {
     return (
-        <StackItemContainer 
+        <StackItemContainer
             id={id}
             index={index}
             key={'container' + '-' + id}

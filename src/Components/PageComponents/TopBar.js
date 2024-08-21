@@ -8,7 +8,6 @@ import MenuIcon from '@mui/icons-material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import SaveIcon from "./SaveIcon";
-import TopBarDirectory from "../ContentComponents/TopBarDirectory";
 import {useLocation, useNavigate} from "react-router-dom";
 import pageURLs from "./pageURLs";
 import {useSelector} from "react-redux";
@@ -32,7 +31,7 @@ function MenuNavigator({text, url}) {
 export default function TopBar(props) {
     const location = useLocation();
     const lastAccessedPage = useSelector((state) => state.pageData.lastAccessedPage);
-
+    const editPageLoaded = useSelector((state) => state.pageData.loaded);
 
     useEffect(() => {
         console.log(lastAccessedPage);
@@ -99,8 +98,8 @@ export default function TopBar(props) {
 
 
                         {
-                            props.pageID && location.pathname.includes(props.pageID) ?
-                                (<TopBarDirectory/>) : (<div></div>)
+                            props.pageID && location.pathname.includes(props.pageID) && editPageLoaded ?
+                                (<div></div>) : (<div></div>)
                         }
                         {
                             location.pathname.includes(pageURLs.classes) ?
