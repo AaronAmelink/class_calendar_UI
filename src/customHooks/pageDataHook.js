@@ -1,28 +1,34 @@
 import {useDispatch} from "react-redux";
 import {
+    addContentToState,
     addPageToState,
+    addPropertyToState,
+    removeContentFromState,
+    removePropertyFromState,
     setCurrentPageName,
-    updatePageContent, updatePageProperty,
-    removePropertyFromState, removeContentFromState, addPropertyToState, addContentToState
+    updatePageContent,
+    updatePageProperty
 } from "../slices/pageDataSlice";
 import {addChange} from "../slices/siteDataSlice";
-const { v4: uuidv4 } = require('uuid');
+
+const {v4: uuidv4} = require('uuid');
 
 function usePageData() {
-    const dispatch= useDispatch();
+    const dispatch = useDispatch();
 
     function updateContent(content, pageId, contentId) {
         dispatch(updatePageContent({...content, id: contentId}));
         dispatch(addChange({type: "content", id: contentId, pageID: pageId, content: content}));
     }
+
     function addPage(referralID, pageID, name) {
         let newPage = {
-            _id : pageID,
-            page_name:name,
+            _id: pageID,
+            page_name: name,
             user_id: window.sessionStorage.getItem("user_id"),
-            content: [{type:"text",value:" ",id:0}],
-            parent_id : referralID,
-            properties : []
+            content: [{type: "text", value: " ", id: 0}],
+            parent_id: referralID,
+            properties: []
         };
         dispatch(addPageToState(newPage));
         dispatch(addChange({type: "page", page: newPage}));
@@ -32,15 +38,18 @@ function usePageData() {
         dispatch(addChange({type: "content", removal: true, id: id, pageID: pageID}));
         dispatch(removeContentFromState(id));
     }
-    function removeProperty(id, pageID){
+
+    function removeProperty(id, pageID) {
         dispatch(addChange({type: "property", removal: true, id: id, pageID: pageID}));
         dispatch(removePropertyFromState(id));
     }
+
     function addProperty(property, pageID) {
         const newId = uuidv4();
         dispatch(addChange({type: "property", property: {...property, id: newId}, pageID: pageID}));
         dispatch(addPropertyToState({...property, id: newId}));
     }
+
     function addContent(content, pageID) {
         dispatch(addChange({type: "content", content: content, pageID: pageID}));
         dispatch(addContentToState(content));
