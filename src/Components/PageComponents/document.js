@@ -1,9 +1,9 @@
-import '../App.css';
+import '../../App.css';
 import Container from '@mui/material/Container';
 import {CssBaseline, ThemeProvider} from "@mui/material";
 import TopBar from "./TopBar";
 import { useEffect } from "react";
-import allThemes from "../theme";
+import allThemes from "../../theme";
 import {Outlet, useNavigate, useParams} from "react-router-dom";
 import {useSelector} from "react-redux";
 

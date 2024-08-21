@@ -5,7 +5,7 @@ import {useState} from "react";
 import MenuItem from "@mui/material/MenuItem";
 import Stack from "@mui/material/Stack";
 import {useDispatch} from "react-redux";
-import {addClass} from "../slices/classDataSlice";
+import {addClass} from "../../slices/classDataSlice";
 import Typography from "@mui/material/Typography";
 const { v4: uuidv4 } = require('uuid');
 

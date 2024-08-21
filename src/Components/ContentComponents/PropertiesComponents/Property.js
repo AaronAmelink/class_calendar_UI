@@ -6,7 +6,7 @@ import * as React from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
 import IconButton from "@mui/material/IconButton";
 import NameValue from "./NameValue";
-import usePageData from "../../customHooks/pageDataHook";
+import usePageData from "../../../customHooks/pageDataHook";
 import {useParams} from "react-router-dom";
 
 export default function Property({id, type}){

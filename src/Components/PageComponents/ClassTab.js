@@ -1,8 +1,8 @@
 import {useDispatch, useSelector} from "react-redux";
 import {useState} from "react";
 import {Tab, Tabs} from "@mui/material";
-import {setCurrentClassTab} from "../slices/siteDataSlice";
-import allThemes from "../theme";
+import {setCurrentClassTab} from "../../slices/siteDataSlice";
+import allThemes from "../../theme";
 
 const tabs = ['Add and Organize', 'View']
 export default function ClassTab() {

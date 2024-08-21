@@ -4,7 +4,7 @@ import Dialog from "@mui/material/Dialog";
 import Stack from "@mui/material/Stack";
 import Divider from "@mui/material/Divider";
 import * as React from "react";
-import {makeClassSelector} from "../slices/classDataSlice";
+import {makeClassSelector} from "../../slices/classDataSlice";
 import Typography from "@mui/material/Typography";
 
 

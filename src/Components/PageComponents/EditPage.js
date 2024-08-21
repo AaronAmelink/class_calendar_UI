@@ -7,9 +7,9 @@ import {useEffect, useState} from "react";
 import {
     getContentBasics,
     getLastModifiedItemId
-} from '../slices/pageDataSlice'
+} from '../../slices/pageDataSlice'
 import { useSelector} from 'react-redux';
-import {store} from '../slices/store';
+import {store} from '../../slices/store';
 import {useParams} from "react-router-dom";
 
 export default function EditPage() {

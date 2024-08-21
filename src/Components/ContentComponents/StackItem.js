@@ -9,7 +9,7 @@ import AddContentMenu from "./AddContentMenu";
 import DividerStackItem from "./StackItems/DividerStackItem";
 import CheckboxStackItem from "./StackItems/CheckboxStackItem";
 import PageButtonStackItem from "./StackItems/PageButtonStackItem";
-import usePageData from "../customHooks/pageDataHook";
+import usePageData from "../../customHooks/pageDataHook";
 import {useParams} from "react-router-dom";
 function StackItemContainer(props) {
     const id = props.id;

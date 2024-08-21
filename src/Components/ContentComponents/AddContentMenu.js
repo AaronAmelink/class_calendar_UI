@@ -1,21 +1,18 @@
 import MenuItem from "@mui/material/MenuItem";
 import IconButton from "@mui/material/IconButton";
 import AddIcon from "@mui/icons-material/Add";
-import { Typography } from "@mui/material";
+import {Typography} from "@mui/material";
 import * as React from "react";
+import {useState} from "react";
 import Menu from "@mui/material/Menu";
-import { useState } from "react";
 import ShortTextIcon from '@mui/icons-material/ShortText';
-import DocumentManager from "../managment/documentManager";
 import HorizontalRuleIcon from '@mui/icons-material/HorizontalRule';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import ArticleIcon from '@mui/icons-material/Article';
-import {useDispatch} from "react-redux";
-import {setSaved} from "../slices/pageDataSlice";
-import usePageData from "../customHooks/pageDataHook";
+import usePageData from "../../customHooks/pageDataHook";
 import {useParams} from "react-router-dom";
-const { v4: uuidv4 } = require('uuid');
 
+const {v4: uuidv4} = require('uuid');
 export default function AddContentMenu(props) {
 
     const [menuVisible, setMenuVisible] = useState(false);
@@ -23,7 +20,7 @@ export default function AddContentMenu(props) {
     const params = useParams();
     const {addContent} = usePageData();
 
-    const handleTextAddClick = ()=> {
+    const handleTextAddClick = () => {
         addContent(props.index, {type: "text", value: "", id: uuidv4()}, params);
     }
 
@@ -32,44 +29,44 @@ export default function AddContentMenu(props) {
     }
 
     const handleCheckBoxAddClick = () => {
-        addContent(props.index, {type: "checkbox", value: "", id: uuidv4(), checked:false, indent:0}, params);
+        addContent(props.index, {type: "checkbox", value: "", id: uuidv4(), checked: false, indent: 0}, params);
     }
 
     const handlePageAddClick = () => {
         addContent(props.index, {type: "page", value: 'New Page', id: uuidv4(), linkedPageID: uuidv4()}, params);
     }
 
-    const handleMenuClick = (event: MouseEvent) =>{
-        if (menuVisible){
+    const handleMenuClick = (event) => {
+        if (menuVisible) {
             handleMenuClose(event);
-        }
-        else{
+        } else {
             handleMenuOpen(event);
         }
     }
-    const handleMenuClose= (event : React.MouseEvent) => {
+    const handleMenuClose = () => {
         setMenuVisible(false);
         setAnchorEl(null);
     }
 
-    const handleMenuOpen = (event : React.MouseEvent) => {
+    const handleMenuOpen = (event) => {
         setMenuVisible(true);
         setAnchorEl(event.currentTarget);
     }
 
-    return(
+    return (
         <IconButton aria-label="plus" onClick={handleMenuClick}>
-            <AddIcon />
+            <AddIcon/>
             <Menu
                 spacing={0}
                 open={menuVisible}
                 id={"Add-Props-Menu"}
                 onClose={handleMenuClose}
                 anchorEl={anchorEl}
-                anchorOrigin=	{{ vertical: 'bottom', horizontal: 'left', }}
+                anchorOrigin={{vertical: 'bottom', horizontal: 'left',}}
                 sx={
-                    { mt: "1px", "& .MuiMenu-paper":
-                            { backgroundColor: "menu.main", },
+                    {
+                        mt: "1px", "& .MuiMenu-paper":
+                            {backgroundColor: "menu.main",},
                     }
                 }
             >

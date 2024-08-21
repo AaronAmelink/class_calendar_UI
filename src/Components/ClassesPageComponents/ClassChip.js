@@ -1,8 +1,7 @@
-import {Button, Grid, Paper} from "@mui/material";
+import {Button, Paper} from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import {PageLink} from "../ContentComponents/PageLink";
-import {Link, useNavigate} from "react-router-dom";
+import {Link} from "react-router-dom";
 import pageURLs from "../PageComponents/pageURLs";
 import * as React from "react";
 import Stack from "@mui/material/Stack";
@@ -14,13 +13,14 @@ export default function ClassChip({id, code, handleClick}) {
     }
 
     return (
-        <Paper elevation={0} variant='outlined' style={{ border: '2px solid' }} sx={{bgcolor:'icon.main', boxShadow:5, borderRadius:9, p:0.1}}>
+        <Paper elevation={0} variant='outlined' style={{border: '2px solid'}}
+               sx={{bgcolor: 'icon.main', boxShadow: 5, borderRadius: 9, p: 0.1}}>
             <Stack direction='row'>
                 <IconButton onClick={onClick}>
                     <MoreVertIcon/>
                 </IconButton>
                 <Link to={pageURLs.page + `/${id}`}>
-                    <Button sx={{color: "text.primary", mt:0.3, ml:-1.5}}>
+                    <Button sx={{color: "text.primary", mt: 0.3, ml: -1.5}}>
                         {code}
                     </Button>
                 </Link>

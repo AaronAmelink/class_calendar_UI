@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {PageLink} from "../PageLink";
 import {useMemo} from "react";
-import {makeContentSelector} from "../../slices/pageDataSlice";
+import {makeContentSelector} from "../../../slices/pageDataSlice";
 import {useSelector} from "react-redux";
 export default function PageButtonStackItem({id}) {
     const contentSelector = useMemo(makeContentSelector, [])

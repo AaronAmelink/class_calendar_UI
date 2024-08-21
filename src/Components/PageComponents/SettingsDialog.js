@@ -4,24 +4,16 @@ import Typography from "@mui/material/Typography";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import DataSaverOnIcon from '@mui/icons-material/DataSaverOn';
-import {
-    Button, Grid,
-    Switch
-} from "@mui/material";
+import {Button, Switch} from "@mui/material";
 import Divider from "@mui/material/Divider";
 import Stack from "@mui/material/Stack";
-import allThemes from "../theme";
+import allThemes from "../../theme";
 import {useDispatch, useSelector} from "react-redux";
+import * as React from "react";
 import {useState} from "react";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
-import {setColor, setTheme} from "../slices/siteDataSlice";
-import ColorPicker from "./ColorPicker";
-import MenuItem from "@mui/material/MenuItem";
-import Menu from "@mui/material/Menu";
-import * as React from "react";
-import {ArrowDropDown} from "@mui/icons-material";
-
+import {setTheme} from "../../slices/siteDataSlice";
 
 
 /*
@@ -47,19 +39,19 @@ import {ArrowDropDown} from "@mui/icons-material";
 
 const menuItems = {
     'Account': {
-        Icon: (<AccountCircleIcon sx={{mr:1}}/>),
+        Icon: (<AccountCircleIcon sx={{mr: 1}}/>),
         component: (<AccountCircleIcon/>)
     },
     'Appearance': {
-        Icon: (<StyleIcon sx={{mr:1}}/>),
+        Icon: (<StyleIcon sx={{mr: 1}}/>),
         component: (<AppearanceGrid/>)
     },
     'Notifications': {
-        Icon: (<NotificationsIcon sx={{mr:1}}/>),
+        Icon: (<NotificationsIcon sx={{mr: 1}}/>),
         component: (<NotificationsIcon/>)
     },
     'Connections': {
-        Icon: (<DataSaverOnIcon sx={{mr:1}}/>),
+        Icon: (<DataSaverOnIcon sx={{mr: 1}}/>),
         component: (<DataSaverOnIcon/>)
     }
 }
@@ -67,9 +59,9 @@ const menuItems = {
 function SettingTitle({name}) {
     return (
         <div>
-            <Typography variant={'h4'} sx={{py:2}}>{name}</Typography>
-            <Divider flexItem variant="fullWidth" sx={{pr:70}}/>
-            <Box sx={{pb:2}}/>
+            <Typography variant={'h4'} sx={{py: 2}}>{name}</Typography>
+            <Divider flexItem variant="fullWidth" sx={{pr: 70}}/>
+            <Box sx={{pb: 2}}/>
         </div>
     );
 }
@@ -78,8 +70,8 @@ function AppearanceGrid() {
     const dispatch = useDispatch();
     const currentTheme = useSelector((state) => state.siteData.theme)
     const [lightModeSwitch, setLightModeSwitch] = useState(currentTheme === 'light')
-    const [anchorEl, setAnchorEl] = React.useState(null);
     const [colorPickerVisible, setColorPickerVisible] = useState(false);
+
     function switchTheme() {
         if (lightModeSwitch) {
             setLightModeSwitch(false);
@@ -90,30 +82,27 @@ function AppearanceGrid() {
         }
     }
 
-    const handleColorClick = (event: MouseEvent) =>{
-        if (colorPickerVisible){
+    const handleColorClick = (event: MouseEvent) => {
+        if (colorPickerVisible) {
             handleColorClose(event);
-        }
-        else{
+        } else {
             handleColorOpen(event);
         }
     }
-    const handleColorClose= (event : React.MouseEvent) => {
+    const handleColorClose = () => {
         setColorPickerVisible(false);
-        setAnchorEl(null);
     }
 
-    const handleColorOpen = (event : React.MouseEvent) => {
+    const handleColorOpen = () => {
         setColorPickerVisible(true);
-        setAnchorEl(event.currentTarget);
     }
 
     return (
-        <Container sx={{pr:-10}}>
-            <Stack spacing={2} >
-                <SettingTitle name='Appearance' sx={{pb:5}}/>
+        <Container sx={{pr: -10}}>
+            <Stack spacing={2}>
+                <SettingTitle name='Appearance' sx={{pb: 5}}/>
                 <Stack spacing={2} direction='row'>
-                    <Typography variant='subtitle1' sx={{pt:0.5}}>
+                    <Typography variant='subtitle1' sx={{pt: 0.5}}>
                         Theme: {currentTheme.theme}
                     </Typography>
                     <Switch
@@ -132,6 +121,7 @@ function MenuButton({theme, item, setSelected, selected}) {
     function handleClick() {
         setSelected(item);
     }
+
     console.log(item);
     return (
         <Button
@@ -165,8 +155,9 @@ export default function SettingsDialog({handleClose, open}) {
             open={open}
             onClose={handleClose}
             sx={
-                { "& .MuiPaper-root":
-                        { backgroundColor: "menu.settings", },
+                {
+                    "& .MuiPaper-root":
+                        {backgroundColor: "menu.settings",},
                 }
             }
         >
@@ -176,8 +167,8 @@ export default function SettingsDialog({handleClose, open}) {
                 useFlexGap
                 divider={<Divider flexItem orientation="vertical" variant="middle"/>}
                 spacing={4}
-                sx={{m:2, xs: 1, sm: 2}}
-               >
+                sx={{m: 2, xs: 1, sm: 2}}
+            >
                 <Stack
                     spacing={1}
                     divider={<Divider flexItem variant="middle"/>}
@@ -185,7 +176,8 @@ export default function SettingsDialog({handleClose, open}) {
                     {
                         Object.keys(menuItems).map((key, index) => {
                             return (
-                                <MenuButton theme={theme} item={key} setSelected={setSelected} selected={selected === key} key={'setting-' + index}/>
+                                <MenuButton theme={theme} item={key} setSelected={setSelected}
+                                            selected={selected === key} key={'setting-' + index}/>
                             );
                         })
                     }

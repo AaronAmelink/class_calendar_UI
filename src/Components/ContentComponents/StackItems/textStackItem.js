@@ -1,10 +1,10 @@
 import {TextField} from "@mui/material";
 import {useSelector} from "react-redux";
-import allThemes from "../../theme";
-import usePageData from "../../customHooks/pageDataHook";
+import allThemes from "../../../theme";
+import usePageData from "../../../customHooks/pageDataHook";
 import {useParams} from "react-router-dom";
 import {useMemo} from "react";
-import {makeContentSelector} from "../../slices/pageDataSlice";
+import {makeContentSelector} from "../../../slices/pageDataSlice";
 export default function TextStackItem(props) {
     const siteTheme = useSelector((state) => state.siteData.theme);
     const id = props.id;

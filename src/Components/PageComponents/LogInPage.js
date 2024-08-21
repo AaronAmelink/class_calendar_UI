@@ -7,11 +7,11 @@ import {
     TextField,
     ThemeProvider,
 } from "@mui/material";
-import allThemes from "../theme";
+import allThemes from "../../theme";
 import Box from "@mui/material/Box";
 import PersonIcon from '@mui/icons-material/Person';
 import Container from "@mui/material/Container";
-import httpHelper from '../managment/httpHelper';
+import httpHelper from '../../managment/httpHelper';
 import {useNavigate} from "react-router-dom";
 import pageURLs from "./pageURLs";
 function LogInPage(){

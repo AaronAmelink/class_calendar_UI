@@ -1,19 +1,18 @@
+import * as React from "react";
 import {useEffect, useState} from "react";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import * as React from "react";
 import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Unstable_Grid2"
 import IconButton from "@mui/material/IconButton";
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import Stack from "@mui/material/Stack";
 import Property from "./PropertiesComponents/Property";
 import AddPropertyMenu from "./PropertiesComponents/AddPropertyMenu";
 import {useSelector} from "react-redux";
-import {store} from "../slices/store";
-import {getLastModifiedPropertyId, getPropertyBasics} from "../slices/pageDataSlice";
+import {store} from "../../slices/store";
+import {getLastModifiedPropertyId, getPropertyBasics} from "../../slices/pageDataSlice";
 
-export default function PropertiesMenu(props) {
+export default function PropertiesMenu() {
     const [menuVisible, setMenuVisible] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
 
@@ -23,15 +22,14 @@ export default function PropertiesMenu(props) {
     useEffect(() => {
         setIdArr(getPropertyBasics(store.getState()));
     }, [lastModifiedItemId]);
-    const handleMenuClick = (event) =>{
-        if (menuVisible){
+    const handleMenuClick = (event) => {
+        if (menuVisible) {
             handleMenuClose(event);
-        }
-        else{
+        } else {
             handleMenuOpen(event);
         }
     }
-    const handleMenuClose= (event) => {
+    const handleMenuClose = () => {
         setMenuVisible(false);
         setAnchorEl(null);
     }
@@ -41,15 +39,15 @@ export default function PropertiesMenu(props) {
         setAnchorEl(event.currentTarget);
     }
 
-    return(
-        <Grid sx={{m:0, minwidth:4/8, mt:2.5}}>
+    return (
+        <Grid sx={{m: 0, minwidth: 4 / 8, mt: 2.5}}>
             <IconButton
                 aria-label="menu"
                 onClick={handleMenuClick}
                 aria-controls={menuVisible ? 'basic-menu' : undefined}
-                sx={{color:"text.main", maxWidth: '100px', maxHeight: '50px', minWidth: '100px', minHeight: '50px'}}
+                sx={{color: "text.main", maxWidth: '100px', maxHeight: '50px', minWidth: '100px', minHeight: '50px'}}
             >
-                <ArrowDropDownIcon />
+                <ArrowDropDownIcon/>
                 <Typography variant="subtitle1">
                     Properties
                 </Typography>
@@ -59,18 +57,18 @@ export default function PropertiesMenu(props) {
                 id={"Props-Menu"}
                 onClose={handleMenuClose}
                 anchorEl={anchorEl}
-                anchorOrigin=	{{ vertical: 'bottom', horizontal: 'left', }}
-                sx={{ mt: "1px"}}
+                anchorOrigin={{vertical: 'bottom', horizontal: 'left',}}
+                sx={{mt: "1px"}}
             >
                 {
                     (idArr.length > 0) ?
                         (idArr.map(entry => {
-                            return(
+                            return (
                                 <MenuItem key={entry.id}>
                                     <Property id={entry.id} type={entry.type}/>
                                 </MenuItem>
                             )
-                        }) ) : (<div></div>)
+                        })) : (<div></div>)
                 }
                 <AddPropertyMenu/>
             </Menu>

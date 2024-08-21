@@ -1,28 +1,27 @@
 import {Grid, TextField} from "@mui/material";
-import DocumentManager from "../../managment/documentManager";
-import {useEffect, useMemo, useRef, useState} from "react";
+import {useMemo, useState} from "react";
 import Checkbox from '@mui/material/Checkbox';
-import {makeContentSelector, setSaved} from "../../slices/pageDataSlice";
-import {useDispatch, useSelector} from "react-redux";
-import usePageData from "../../customHooks/pageDataHook";
+import {makeContentSelector} from "../../../slices/pageDataSlice";
+import {useSelector} from "react-redux";
+import usePageData from "../../../customHooks/pageDataHook";
 import {useParams} from "react-router-dom";
-const { v4: uuidv4 } = require('uuid');
+
+const {v4: uuidv4} = require('uuid');
 export default function CheckboxStackItem({id, index}) {
     const contentSelector = useMemo(makeContentSelector, [])
     const [shiftDown, setShiftDown] = useState(false);
-
     const content = useSelector(state =>
         contentSelector(state, id)
     )
     const params = useParams();
-    const {  addContent, updateContent, removeContent } = usePageData();
+    const {addContent, updateContent, removeContent} = usePageData();
 
-    const handleTextChange = (newValue) =>{
+    const handleTextChange = (newValue) => {
         updateContent(
             {
-                value : newValue,
+                value: newValue,
                 checked: content.checked,
-                id : id,
+                id: id,
                 type: "checkbox",
                 indent: content.indent
             }, params.pageID, id);
@@ -31,9 +30,9 @@ export default function CheckboxStackItem({id, index}) {
     const handleCheckChange = (event) => {
         updateContent(
             {
-                value : content.value,
+                value: content.value,
                 checked: event.target.checked,
-                id : id,
+                id: id,
                 type: "checkbox",
                 indent: content.indent
             }, params.pageID, id);
@@ -42,45 +41,44 @@ export default function CheckboxStackItem({id, index}) {
     const handleKeyUp = (e) => {
         if (e.key === "Shift") setShiftDown(false);
     }
-    const handleKeyDown = (e) =>{
+    const handleKeyDown = (e) => {
 
         if (e.keyCode === 9) e.preventDefault();
 
-        if (content.value.length === 0 && e.key === "Backspace"){
+        if (content.value.length === 0 && e.key === "Backspace") {
             removeContent(id);
         }
 
         if (e.key === "Shift") setShiftDown(true);
 
-        if (e.key === "Enter"){
-            addContent(index,{
-                value : '',
-                id : uuidv4(),
+        if (e.key === "Enter") {
+            addContent(index, {
+                value: '',
+                id: uuidv4(),
                 type: "checkbox",
-                checked : content.checked,
-                indent : content.indent
+                checked: content.checked,
+                indent: content.indent
             }, params.pageID, id);
         }
 
-        if (e.key === "Tab" && content.indent <= 6 && content.indent >= 0){
-            if ((shiftDown && content.indent > 0) || content.indent === 6){
+        if (e.key === "Tab" && content.indent <= 6 && content.indent >= 0) {
+            if ((shiftDown && content.indent > 0) || content.indent === 6) {
                 updateContent(
                     {
-                        value : content.value,
+                        value: content.value,
                         checked: content.checked,
-                        id : id,
+                        id: id,
                         type: "checkbox",
-                        indent: content.indent-1
+                        indent: content.indent - 1
                     }, params.pageID, id);
-            }
-            else{
+            } else {
                 updateContent(
                     {
-                        value : content.value,
+                        value: content.value,
                         checked: content.checked,
-                        id : id,
+                        id: id,
                         type: "checkbox",
-                        indent: content.indent+1
+                        indent: content.indent + 1
                     }, params.pageID, id);
             }
         }
@@ -89,9 +87,9 @@ export default function CheckboxStackItem({id, index}) {
     const handleClick = () => {
     }
 
-    return(
+    return (
         <Grid container spacing={0} wrap='nowrap'>
-            <Grid item xs="0.3" sx={{ml:10*(content?.indent), mr:1}}>
+            <Grid item xs="0.3" sx={{ml: 10 * (content?.indent), mr: 1}}>
                 <Checkbox
                     onKeyDown={handleKeyDown}
                     checked={content?.checked}
@@ -104,13 +102,13 @@ export default function CheckboxStackItem({id, index}) {
                     }}
                 />
             </Grid>
-            <Grid item sx={{mt: 0.5, ml:1}} xs="11">
+            <Grid item sx={{mt: 0.5, ml: 1}} xs="11">
                 <TextField
                     id={id}
                     variant={"standard"}
                     InputProps={{disableUnderline: true}}
-                    sx={{ width: '100%', textOverflow: 'clip' }}
-                    onChange={ e=>handleTextChange(e.target.value)}
+                    sx={{width: '100%', textOverflow: 'clip'}}
+                    onChange={e => handleTextChange(e.target.value)}
                     onKeyDown={handleKeyDown}
                     onKeyUp={handleKeyUp}
                     onClick={handleClick}
