@@ -122,7 +122,6 @@ function MenuButton({theme, item, setSelected, selected}) {
         setSelected(item);
     }
 
-    console.log(item);
     return (
         <Button
             style=

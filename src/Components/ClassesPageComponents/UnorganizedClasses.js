@@ -33,7 +33,6 @@ export default function UnorganizedClasses() {
     function handleChipClick(courseID) {
         setSelectedClassID(courseID);
         setDialogOpen(true);
-        console.log(courseID);
         return courseID;
     }
 

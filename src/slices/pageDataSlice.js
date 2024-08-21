@@ -4,27 +4,20 @@ import httpHelper from "../managment/httpHelper";
 export const fetchPages = createAsyncThunk('pageData/get', async ({pageID}, {getState}) => {
     const state = getState();
     let index = state.pageData.pages.findIndex(page => page._id === pageID);
-    let newPages = []
+    let newPages = [];
+    let newPage;
     if (index !== -1) {
-        let newPage = state.pageData.pages[index];
-        for (const content of newPage.content) {
-            if (content.type === 'page' && !state.pageData.pages.find(page => page._id === content.linkedPageID)) {
-                let childPage = await httpHelper.getPage(content.linkedPageID);
-                newPages.push(childPage);
-            }
-        }
-        return {currentPage: newPage, childPages: newPages};
+        newPage = state.pageData.pages[index];
     } else {
-        let newPage = await httpHelper.getPage(pageID);
-        console.log(newPage);
-        for (const content of newPage.content) {
-            if (content.type === 'page' && !state.pageData.pages.find(page => page._id === content.linkedPageID)) {
-                let childPage = await httpHelper.getPage(content.linkedPageID);
-                newPages.push(childPage);
-            }
-        }
-        return {currentPage: newPage, childPages: newPages};
+        newPage = await httpHelper.getPage(pageID);
     }
+    for (const content of newPage.content) {
+        if (content.type === 'page' && !state.pageData.pages.find(page => page._id === content.linkedPageID) && state.pageData.currentPage?.parent_id !== pageID) {
+            let childPage = await httpHelper.getPage(content.linkedPageID);
+            newPages.push(childPage);
+        }
+    }
+    return {currentPage: newPage, newPages: newPages};
 
 });
 
@@ -44,24 +37,12 @@ export const pageData = createSlice({
     name: 'pageData',
     initialState,
     reducers: {
-        setLoaded(state, action) {
-            state.loaded = action.payload;
-        },
         setSaved(state, action) {
             state.saved = action.payload;
-        },
-        setLastAccessedPage(state, action) {
-            state.lastAccessedPage = action.payload;
-        },
-        setCurrentPageProperties(state, action) {
-            state.currentPage.properties = action.payload;
         },
         setCurrentPageName(state, action) {
             console.log(action.payload);
             state.currentPage.page_name = action.payload;
-        },
-        addCurrentPageToPages(state) {
-            state.pages.push(state.currentPage);
         },
         updatePageContent(state, action) {
             let index = state.currentPage.content.findIndex(content => content.id === action.payload.id);
@@ -70,12 +51,6 @@ export const pageData = createSlice({
         updatePageProperty(state, action) {
             let index = state.currentPage.properties.findIndex(property => property.id === action.payload.id);
             state.currentPage.properties[index] = action.payload;
-        },
-        setCurrentPage(state, action) {
-            state.isClass = action.payload.isClass;
-            state.currentPage = action.payload;
-            state.lastAccessedPage = {id: action.payload._id, name: action.payload.page_name};
-            state.lastModifiedItemId = `changed page ${action.payload._id}`;
         },
         addPageToState(state, action) {
             let index = state.pages.findIndex(page => page._id === action.payload._id);
@@ -87,6 +62,9 @@ export const pageData = createSlice({
         },
         removePage(state, action) {
             delete state.pages[action.payload];
+        },
+        setLoaded(state, action) {
+            state.loaded = action.payload;
         },
         removePropertyFromState(state, action) {
             let index = state.currentPage.properties.findIndex(property => property.id === action.payload);
@@ -109,6 +87,7 @@ export const pageData = createSlice({
     },
     extraReducers(builder) {
         builder.addCase(fetchPages.fulfilled, (state, action) => {
+            console.log('fufilled');
             state.loaded = true;
             state.lastModifiedItemId = `changed page ${action.payload.currentPage._id}`;
             state.lastModifiedPropertyId = `changed page ${action.payload.currentPage._id}`;
@@ -117,7 +96,13 @@ export const pageData = createSlice({
                 state.pages.push(state.currentPage);
             }
             state.currentPage = action.payload.currentPage;
-            state.pages.push(...action.payload.childPages);
+            state.pages.push(...action.payload.newPages);
+            let preExistingPageIndex = state.pages.findIndex(page => page._id === action.payload.currentPage._id);
+            if (preExistingPageIndex !== -1) {
+                state.pages.splice(preExistingPageIndex, 1);
+            }
+            state.lastAccessedPage = {name: action.payload.currentPage.page_name, id: action.payload.currentPage._id};
+
         });
         builder.addCase(fetchPages.pending, (state, action) => {
             state.loaded = false;
@@ -163,9 +148,17 @@ export const getPropertyBasics = (state) => {
         });
     }
 }
+export const getDirectoryOfDocument = createSelector([state => state.pageData.pages, state => state.pageData.currentPage], (pages, currentPage) => {
+    let directory = [];
+    let iterPage = currentPage;
+    while (iterPage) {
+        directory.push({id: iterPage._id, name: iterPage.page_name});
+        iterPage = pages.find(page => page._id === iterPage.parent_id);
+    }
+    return directory.reverse();
+});
 
 export const selectPageName = state => state.pageData.currentPage?.page_name;
-export const getPageName = (state, id) => state.pageData.pages[id].page_name;
 export const getLastModifiedItemId = (state) => state.pageData.lastModifiedItemId;
 export const getLastModifiedPropertyId = (state) => state.pageData.lastModifiedPropertyId;
 export const getContentBasics = (state) => {
@@ -178,20 +171,15 @@ export const getContentBasics = (state) => {
     return mappedContent ? mappedContent : [];
 }
 
-export const getPageID = (state) => state.pageData.lastAccessedPage?.id;
-
 
 export const {
-    setSaved,
-    setLastAccessedPage,
     addPageToState,
     removePage,
     setCurrentPageName,
-    setCurrentPage,
-    addCurrentPageToPages,
     updatePageContent,
     updatePageProperty,
     removePropertyFromState,
+    setLoaded,
     removeContentFromState,
     addContentToState,
     addPropertyToState,

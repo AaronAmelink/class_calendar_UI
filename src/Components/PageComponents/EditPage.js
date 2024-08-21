@@ -13,7 +13,7 @@ export default function EditPage() {
     const params = useParams();
     const lastModifiedItemId = useSelector(getLastModifiedItemId);
     const dispatch = useDispatch();
-    const loaded = useSelector(state => state.pageData.loaded);
+    console.log('edit page rerender');
     useEffect(() => {
         dispatch(fetchPages({pageID: params.pageID}));
     }, [params.pageID]);
@@ -24,37 +24,28 @@ export default function EditPage() {
         setIdArr(getContentBasics(store.getState()));
     }, [lastModifiedItemId]);
 
-
     let index = -1;
     return (
         <div>
-            {
-                (loaded && idArr.length) ?
-                    (
-                        <div>
-                            <Grid container spacing={2}>
-                                <Grid item xs={10}>
-                                    <Typography variant="h4" gutterBottom sx={{color: "text.secondary", m: 3}}>
-                                        <PageName pageID={params.pageID}/>
-                                    </Typography>
-                                </Grid>
-                                <Grid item>
-                                    <PropertiesMenu pageID={params.pageID}/>
-                                </Grid>
-                            </Grid>
-                            <Stack spacing={0} sx={{ml: 3, mt: 3}}>
-                                {
-                                    (idArr && idArr.length) ? idArr.map(entry => {
-                                        index += 1;
-                                        if (entry.type) return (
-                                            <StackItem type={entry.type} id={entry.id} index={index} key={entry.id}/>);
-                                    }) : <span/>
-                                }
-                            </Stack>
-                        </div>
-                    )
-                    : (<h1>Loading...</h1>)
-            }
+            <Grid container spacing={2}>
+                <Grid item xs={10}>
+                    <Typography variant="h4" gutterBottom sx={{color: "text.secondary", m: 3}}>
+                        <PageName pageID={params.pageID}/>
+                    </Typography>
+                </Grid>
+                <Grid item>
+                    <PropertiesMenu pageID={params.pageID}/>
+                </Grid>
+            </Grid>
+            <Stack spacing={0} sx={{ml: 3, mt: 3}}>
+                {
+                    (idArr && idArr.length) ? idArr.map(entry => {
+                        index += 1;
+                        if (entry.type) return (
+                            <StackItem type={entry.type} id={entry.id} index={index} key={entry.id}/>);
+                    }) : <span/>
+                }
+            </Stack>
         </div>
     );
 }

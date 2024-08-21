@@ -18,7 +18,6 @@ export default function PropertiesMenu() {
 
     const lastModifiedItemId = useSelector(getLastModifiedPropertyId);
     const [idArr, setIdArr] = useState(getPropertyBasics(store.getState()));
-    console.log(idArr);
     useEffect(() => {
         setIdArr(getPropertyBasics(store.getState()));
     }, [lastModifiedItemId]);

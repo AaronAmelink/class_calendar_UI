@@ -26,7 +26,7 @@ class HttpHelper {
                     "Authorization": window.sessionStorage.getItem("authToken"),
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ parent_id: parentID })
+                body: JSON.stringify({parent_id: parentID})
             })).json();
             return response;
         } catch (e) {
@@ -43,14 +43,12 @@ class HttpHelper {
                     "Authorization": window.sessionStorage.getItem("authToken"),
                 }
             })).json();
-            console.log(response);
             return response;
         } catch (e) {
             console.log(e);
             return ({});
         }
     }
-
 
 
     async addNewPage(referenceID, newID) {

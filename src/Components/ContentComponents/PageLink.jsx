@@ -1,15 +1,21 @@
 import {Button} from "@mui/material";
 import {Link} from "react-router-dom";
 import * as React from "react";
-import {useSelector} from "react-redux";
+import {useDispatch} from "react-redux";
 import pageURLs from "../PageComponents/pageURLs";
+import {setLoaded} from "../../slices/pageDataSlice";
 
-export function PageLink({pageID, buttonVariant, overwritePageName, color}) {
-    const pageName = useSelector((state) => state.pageData.pages.find(page => page._id === pageID))?.page_name;
+export function PageLink({pageID, buttonVariant, pageName, color}) {
+    const dispatch = useDispatch();
+
+    function handleClick() {
+        dispatch(setLoaded(false));
+    }
+
     return (
-        <Link to={pageURLs.page + `/${pageID}`} key={pageName}>
+        <Link to={pageURLs.page + `/${pageID}`} key={pageName} onClick={handleClick}>
             <Button variant={buttonVariant} color={color ? color : 'icon'}>
-                {overwritePageName ?? pageName}
+                {pageName}
             </Button>
         </Link>
     )

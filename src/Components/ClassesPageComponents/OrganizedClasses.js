@@ -17,32 +17,31 @@ export default function OrganizedClasses() {
         setDialogOpen(false);
     }
 
-    function handleChipClick(courseID)  {
+    function handleChipClick(courseID) {
         setSelectedClassID(courseID);
         setDialogOpen(true);
-        console.log(courseID);
         return courseID;
     }
 
     useEffect(() => {
         let newPlannedSemester = new Set(classes.map(classItem => classItem.planned));
-        console.log(newPlannedSemester);
         setPlannedSemesters(newPlannedSemester ? [...newPlannedSemester] : []);
     }, [classes]);
 
     return (
         <Paper elevation={0}
                variant='outlined'
-               sx={{bgcolor:'background.elevated', boxShadow:5, width:1, height:1, overflow:'auto'}}
+               sx={{bgcolor: 'background.elevated', boxShadow: 5, width: 1, height: 1, overflow: 'auto'}}
                display="flex"
                justifyContent="center"
                alignItems="center">
-            <ClassDialog classID={selectedClassID} open={dialogOpen} handleClose={handleDialogClose} />
-            <Stack direction='row' sx={{height:1, p:5}} spacing={2}>
+            <ClassDialog classID={selectedClassID} open={dialogOpen} handleClose={handleDialogClose}/>
+            <Stack direction='row' sx={{height: 1, p: 5}} spacing={2}>
                 {
                     plannedSemesters.map(semester => {
                         let relevantClasses = classes.filter(classItem => classItem.planned === semester);
-                        return (<SemesterCard semester={semester} classes={relevantClasses} handleClick={handleChipClick} />);
+                        return (<SemesterCard semester={semester} classes={relevantClasses}
+                                              handleClick={handleChipClick}/>);
                     })
                 }
             </Stack>

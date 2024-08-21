@@ -1,19 +1,19 @@
-import DocumentManager from "../../managment/documentManager";
 import * as React from 'react';
 import {Breadcrumbs} from "@mui/material";
-import {useSelector} from "react-redux";
 import {PageLink} from "./PageLink";
+import {getDirectoryOfDocument} from "../../slices/pageDataSlice";
+import {store} from "../../slices/store";
 
 export default function TopBarDirectory() {
-    const dataLoaded = useSelector((state) => state.pageData.loaded);
+    const directory = getDirectoryOfDocument(store.getState());
 
     return (
         <div>
             <Breadcrumbs seperator="›">
                 {
-                    dataLoaded && DocumentManager.getDirectoryOfDocument(DocumentManager.currentPage._id).slice().reverse().map((pageID) => {
+                    directory.map(page => {
                         return (
-                            <PageLink pageID={pageID} buttonVariant='text'/>
+                            <PageLink pageID={page.id} buttonVariant='text' pageName={page.name}/>
                         );
                     })
                 }

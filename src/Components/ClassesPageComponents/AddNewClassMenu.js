@@ -1,13 +1,14 @@
 import {Button, FormControl, Grid, InputLabel, Paper, Select, TextField} from "@mui/material";
 import Box from "@mui/material/Box";
-import {Numbers, Class, School, Person, CalendarMonth, Add, Extension} from "@mui/icons-material";
+import {Add, CalendarMonth, Class, Extension, Numbers, Person, School} from "@mui/icons-material";
 import {useState} from "react";
 import MenuItem from "@mui/material/MenuItem";
 import Stack from "@mui/material/Stack";
 import {useDispatch} from "react-redux";
 import {addClass} from "../../slices/classDataSlice";
 import Typography from "@mui/material/Typography";
-const { v4: uuidv4 } = require('uuid');
+
+const {v4: uuidv4} = require('uuid');
 
 function ClassInputField({icon, label, required, numbersOnly, CSV, value, setValue, error}) {
 
@@ -19,7 +20,7 @@ function ClassInputField({icon, label, required, numbersOnly, CSV, value, setVal
         if (CSV) {
             let [secondLast, last] = filteredValue.slice(-2)
             if (last === ' ' && secondLast !== ',') {
-                filteredValue = filteredValue.slice(0,-1) + ', ';
+                filteredValue = filteredValue.slice(0, -1) + ', ';
             }
         }
         setValue(filteredValue);
@@ -27,7 +28,7 @@ function ClassInputField({icon, label, required, numbersOnly, CSV, value, setVal
     }
 
     return (
-        <Box sx={{ display: 'flex', alignItems: 'flex-end' }}>
+        <Box sx={{display: 'flex', alignItems: 'flex-end'}}>
             {icon}
             <TextField
                 label={label}
@@ -96,7 +97,6 @@ export default function AddNewClassMenu() {
             planned: className
         };
         dispatch(addClass(newClass));
-        console.log(newClass);
 
         inputSetters.forEach(setter => {
             setter('');
@@ -105,33 +105,39 @@ export default function AddNewClassMenu() {
     }
 
     return (
-        <Paper elevation={0} variant='outlined' sx={{bgcolor:'background.elevated', boxShadow:5, height:1, px:5, overflow: 'auto'}}>
+        <Paper elevation={0} variant='outlined'
+               sx={{bgcolor: 'background.elevated', boxShadow: 5, height: 1, px: 5, overflow: 'auto'}}>
             <Stack container spacing={2}>
                 <Grid container spacing={2}>
                     <Grid item xs={4}>
-                        <ClassInputField required icon={<Class sx={{mr: 1, my: 0.5 }}/>} label='Class Name' value={className} setValue={setClassName}  error={classNameEmpty}/>
+                        <ClassInputField required icon={<Class sx={{mr: 1, my: 0.5}}/>} label='Class Name'
+                                         value={className} setValue={setClassName} error={classNameEmpty}/>
                     </Grid>
                     <Grid item xs={4}>
-                        <ClassInputField required icon={<Numbers sx={{mr: 1, my: 0.5 }}/>} label='Course Code' value={courseCode} setValue={setCourseCode} error={courseCodeEmpty}/>
+                        <ClassInputField required icon={<Numbers sx={{mr: 1, my: 0.5}}/>} label='Course Code'
+                                         value={courseCode} setValue={setCourseCode} error={courseCodeEmpty}/>
 
                     </Grid>
                     <Grid item xs={4}>
-                        <ClassInputField numbersOnly icon={<School sx={{mr: 1, my: 0.5 }}/>} label='Credit Worth' value={creditWorth} setValue={setCreditWorth}/>
+                        <ClassInputField numbersOnly icon={<School sx={{mr: 1, my: 0.5}}/>} label='Credit Worth'
+                                         value={creditWorth} setValue={setCreditWorth}/>
                     </Grid>
                 </Grid>
                 <Grid container spacing={2}>
                     <Grid item xs={4}>
-                        <ClassInputField CSV required icon={<Extension sx={{mr: 1, my: 0.5 }}/>} label='Pre Requisites' value={preRequisites} setValue={setPreRequisites} />
+                        <ClassInputField CSV required icon={<Extension sx={{mr: 1, my: 0.5}}/>} label='Pre Requisites'
+                                         value={preRequisites} setValue={setPreRequisites}/>
                     </Grid>
                     <Grid item xs={4}>
-                        <ClassInputField icon={<Person sx={{mr: 1, my: 0.5 }}/>} label='Professor' value={professor} setValue={setProfessor}/>
+                        <ClassInputField icon={<Person sx={{mr: 1, my: 0.5}}/>} label='Professor' value={professor}
+                                         setValue={setProfessor}/>
                     </Grid>
                     <Grid item xs={4}>
-                        <Box sx={{ display: 'flex', alignItems: 'flex-end'}}>
+                        <Box sx={{display: 'flex', alignItems: 'flex-end'}}>
                             <CalendarMonth sx={{mr: 1, my: 0.5}}/>
                             <Grid container spacing={2}>
                                 <Grid item xs={6}>
-                                    <FormControl variant='standard' sx={{width:1}}>
+                                    <FormControl variant='standard' sx={{width: 1}}>
                                         <InputLabel>Season *</InputLabel>
                                         <Select
                                             variant='standard'
@@ -148,7 +154,7 @@ export default function AddNewClassMenu() {
                                     </FormControl>
                                 </Grid>
                                 <Grid item xs={6}>
-                                    <FormControl variant='standard' sx={{width:1}}>
+                                    <FormControl variant='standard' sx={{width: 1}}>
                                         <InputLabel>Offered *</InputLabel>
                                         <Select
                                             variant='standard'
@@ -178,7 +184,8 @@ export default function AddNewClassMenu() {
                             display="flex"
                             justifyContent="center"
                             alignItems="center">
-                            <Button color='secondary' startIcon={(<Add/>)} variant='contained' sx={{width:1}} onClick={handleAdd}>Add</Button>
+                            <Button color='secondary' startIcon={(<Add/>)} variant='contained' sx={{width: 1}}
+                                    onClick={handleAdd}>Add</Button>
                         </Box>
                     </Grid>
                     <Grid item xs={4}>

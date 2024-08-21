@@ -16,6 +16,8 @@ export default function CheckboxStackItem({id, index}) {
     const params = useParams();
     const {addContent, updateContent, removeContent} = usePageData();
 
+    if (!content) return (<div></div>);
+
     const handleTextChange = (newValue) => {
         updateContent(
             {
