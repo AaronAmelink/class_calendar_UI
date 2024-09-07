@@ -9,7 +9,7 @@ import ShortTextIcon from '@mui/icons-material/ShortText';
 import {useParams} from "react-router-dom";
 import usePageData from "../../../customHooks/pageDataHook";
 
-export default function AddPropertyMenu() {
+export default function AddPropertyMenu(classID = null) {
     const [menuVisible, setMenuVisible] = useState(false);
     const [anchorEl, setAnchorEl] = React.useState(null);
     const {addProperty} = usePageData();
@@ -20,7 +20,7 @@ export default function AddPropertyMenu() {
             type: 'text',
             name: '',
             value: ''
-        }, params.id);
+        }, classID ? classID.classID : params.pageID);
     }
     const handleMenuClose = () => {
         setMenuVisible(false);

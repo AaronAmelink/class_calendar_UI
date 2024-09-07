@@ -9,28 +9,29 @@ import NameValue from "./NameValue";
 import usePageData from "../../../customHooks/pageDataHook";
 import {useParams} from "react-router-dom";
 
-export default function Property({id, type}){
+export default function Property({id, type, classID = null}) {
     const {removeProperty} = usePageData();
     const params = useParams();
+
     function handleDeleteClick() {
-        removeProperty(id, params.pageID);
+        removeProperty(id, (classID) ? classID : params.pageID);
     }
 
     return (
         <Stack>
             <Grid container spacing={2}>
                 <Grid>
-                    <Name id={id}/>
+                    <Name id={id} classID={classID}/>
                 </Grid>
                 <Grid>
-                    <Divider orientation="vertical" variant="fullWidth" sx={{ bgcolor: "secondary.main" }}/>
+                    <Divider orientation="vertical" variant="fullWidth" sx={{bgcolor: "secondary.main"}}/>
                 </Grid>
                 <Grid>
-                    <Value id={id} type={type}/>
+                    <Value id={id} type={type} classID={classID}/>
                 </Grid>
                 <Grid>
-                    <IconButton aria-label="delete" sx={{color:"text.main", mt:1}} onClick={handleDeleteClick}>
-                        <DeleteIcon />
+                    <IconButton aria-label="delete" sx={{color: "text.main", mt: 1}} onClick={handleDeleteClick}>
+                        <DeleteIcon/>
                     </IconButton>
                 </Grid>
             </Grid>
@@ -38,12 +39,13 @@ export default function Property({id, type}){
     );
 }
 
-function Value({id, type}) {
+function Value({id, type, classID}) {
+
     if (type === 'text') {
-        return (<TextValue id={id}/>);
+        return (<TextValue id={id} classID={classID}/>);
     }
 }
 
-function Name({id}) {
-    return (<NameValue id={id}/>);
+function Name({id, classID}) {
+    return (<NameValue id={id} classID={classID}/>);
 }

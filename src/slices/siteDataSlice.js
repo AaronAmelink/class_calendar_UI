@@ -1,11 +1,12 @@
-import { createSlice } from '@reduxjs/toolkit'
+import {createSlice} from '@reduxjs/toolkit'
 import theme from "../theme";
 
 const initialState = {
-    theme: { mode: 'dark', color: '#0096ab'},
+    theme: {mode: 'dark', color: '#0096ab'},
     currentClassTab: 'Add and Organize',
     changes: [],
-    saved: true
+    saved: true,
+    isLookingAtClass: false
 }
 const siteData = createSlice({
     name: 'pageData',
@@ -32,20 +33,23 @@ const siteData = createSlice({
             }
             state.theme.color = newColor;
         },
-        addChange(state, action){
+        addChange(state, action) {
             let index = state.changes.findIndex((c) => c.id === action.payload.id);
-            if (index === -1){
+            if (index === -1) {
                 state.changes.push(action.payload);
             } else {
                 state.changes[index] = action.payload;
             }
             state.saved = false;
         },
-        clearChanges(state){
+        clearChanges(state) {
             state.changes = [];
         },
-        setSaved(state, action){
+        setSaved(state, action) {
             state.saved = action.payload
+        },
+        setIsLookingAtClass(state, action) {
+            state.isLookingAtClass = action.payload;
         }
     }
 })
@@ -56,6 +60,7 @@ export const {
     setColor,
     addChange,
     clearChanges,
-    setSaved
+    setSaved,
+    setIsLookingAtClass
 } = siteData.actions
 export default siteData.reducer

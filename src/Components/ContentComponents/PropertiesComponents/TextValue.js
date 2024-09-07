@@ -5,17 +5,17 @@ import {useSelector} from "react-redux";
 import usePageData from "../../../customHooks/pageDataHook";
 import {useParams} from "react-router-dom";
 
-export default function TextValue({id}) {
+export default function TextValue({id, classID = null}) {
     const propertySelector = useMemo(makePropertySelector, [])
     const {updateProperty} = usePageData();
     const params = useParams();
-    console.log('text value property render');
+
     const property = useSelector(state =>
-        propertySelector(state, id)
+        propertySelector(state, {id, classID})
     );
 
     function handleChange(newValue) {
-        updateProperty({...property, value: newValue}, params.pageID, id);
+        updateProperty({...property, value: newValue}, classID ? classID : params.pageID, id);
     }
 
     return (

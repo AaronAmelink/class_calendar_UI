@@ -20,7 +20,6 @@ export default function EditPage() {
 
     const [idArr, setIdArr] = useState(getContentBasics(store.getState()));
     useEffect(() => {
-        console.log('lastModifiedItemId useEffect');
         setIdArr(getContentBasics(store.getState()));
     }, [lastModifiedItemId]);
 

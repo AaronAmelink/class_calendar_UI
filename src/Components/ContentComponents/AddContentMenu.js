@@ -21,19 +21,19 @@ export default function AddContentMenu(props) {
     const {addContent} = usePageData();
 
     const handleTextAddClick = () => {
-        addContent(props.index, {type: "text", value: "", id: uuidv4()}, params);
+        addContent(props.index, {type: "text", value: "", id: uuidv4()}, params.pageID);
     }
 
     const handleDivAddClick = () => {
-        addContent(props.index, {type: "divider", id: uuidv4()}, params);
+        addContent(props.index, {type: "divider", id: uuidv4()}, params.pageID);
     }
 
     const handleCheckBoxAddClick = () => {
-        addContent(props.index, {type: "checkbox", value: "", id: uuidv4(), checked: false, indent: 0}, params);
+        addContent(props.index, {type: "checkbox", value: "", id: uuidv4(), checked: false, indent: 0}, params.pageID);
     }
 
     const handlePageAddClick = () => {
-        addContent(props.index, {type: "page", value: 'New Page', id: uuidv4(), linkedPageID: uuidv4()}, params);
+        addContent(props.index, {type: "page", id: uuidv4(), linkedPageID: uuidv4()}, params.pageID);
     }
 
     const handleMenuClick = (event) => {

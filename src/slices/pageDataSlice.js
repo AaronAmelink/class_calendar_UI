@@ -3,6 +3,9 @@ import httpHelper from "../managment/httpHelper";
 
 export const fetchPages = createAsyncThunk('pageData/get', async ({pageID}, {getState}) => {
     const state = getState();
+    if (state.pageData.currentPage?._id === pageID) {
+        return {currentPage: state.pageData.currentPage, newPages: []};
+    }
     let index = state.pageData.pages.findIndex(page => page._id === pageID);
     let newPages = [];
     let newPage;
@@ -40,8 +43,10 @@ export const pageData = createSlice({
         setSaved(state, action) {
             state.saved = action.payload;
         },
+        editLastModifiedProperty(state, action) {
+            state.lastModifiedPropertyId = action.payload;
+        },
         setCurrentPageName(state, action) {
-            console.log(action.payload);
             state.currentPage.page_name = action.payload;
         },
         updatePageContent(state, action) {
@@ -65,6 +70,9 @@ export const pageData = createSlice({
         },
         setLoaded(state, action) {
             state.loaded = action.payload;
+        },
+        setIsClass(state, action) {
+            state.isClass = action.payload;
         },
         removePropertyFromState(state, action) {
             let index = state.currentPage.properties.findIndex(property => property.id === action.payload);
@@ -126,19 +134,25 @@ export const makeContentSelector = () => {
 
 export const makePropertySelector = () => {
     const selectProperty = createSelector(
-        [state => state.pageData.currentPage?.properties, state => state.classData.classes, (state, id) => id, state => state.pageData.isClass],
-        (properties, classes, id, isClass) => {
-            if (!isClass) {
-                return properties.find(item => item?.id === id);
+        [state => state.pageData.currentPage?.properties, state => state.classData.classes, (state, id) => id, state => state.pageData.isClass, state => state.siteData.isLookingAtClass],
+        (properties, classes, id, isClass, isLookingAtClass) => {
+            if (isClass || isLookingAtClass) {
+                return classes.find(classItem => classItem.id === id.classID).properties.find(item => item?.id === id.id);
             } else {
-                return classes.find(item => item?.id === id);
+                return properties.find(item => item?.id === id.id);
             }
         })
     return selectProperty;
 }
 export const getPropertyBasics = (state) => {
     if (state.pageData.isClass) {
-        return state.classData.classes?.map(classItem => classItem.id)
+        let classItem = state.classData.classes.find(item => item.id === state.pageData.currentPage._id);
+        return classItem.properties.map(property => {
+            return {
+                id: property.id,
+                type: 'text'
+            }
+        });
     } else {
         return state.pageData.currentPage?.properties?.map(property => {
             return {
@@ -174,6 +188,7 @@ export const getContentBasics = (state) => {
 
 export const {
     addPageToState,
+    editLastModifiedProperty,
     removePage,
     setCurrentPageName,
     updatePageContent,
@@ -183,6 +198,7 @@ export const {
     removeContentFromState,
     addContentToState,
     addPropertyToState,
+    setIsClass
 } = pageData.actions
 
 export default pageData.reducer

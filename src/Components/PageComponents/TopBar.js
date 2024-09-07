@@ -29,7 +29,7 @@ function MenuNavigator({text, url}) {
     );
 }
 
-export default function TopBar(props) {
+export default function TopBar() {
     const location = useLocation();
     const lastAccessedPage = useSelector((state) => state.pageData.lastAccessedPage);
     const editPageLoaded = useSelector((state) => state.pageData.loaded);
@@ -95,7 +95,7 @@ export default function TopBar(props) {
 
 
                         {
-                            editPageLoaded ?
+                            (editPageLoaded && location.pathname.includes(pageURLs.page)) ?
                                 (<TopBarDirectory/>) : (<div></div>)
                         }
                         {

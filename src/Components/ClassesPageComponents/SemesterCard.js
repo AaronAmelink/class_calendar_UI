@@ -12,7 +12,7 @@ export default function SemesterCard({semester, classes, handleClick}) {
     useEffect(() => {
         let total = 0;
         classes.forEach(classItem => {
-            let classWorth = parseFloat(classItem.creditWorth)
+            let classWorth = parseFloat(classItem.properties.find(prop => prop.name === 'Credit Worth').value);
             total += classWorth ? classWorth : 0;
         })
         setCreditTotal(total);
@@ -39,9 +39,11 @@ export default function SemesterCard({semester, classes, handleClick}) {
                            sx={{overflow: 'auto', my: 2}}>
                         {
                             classes.map(classItem => {
-                                if (classItem.planned) {
-                                    return (<ClassChip code={classItem.courseCode} id={classItem.id}
-                                                       handleClick={handleClick}/>);
+                                if (classItem.properties.find(property => property.name === 'Planned')?.value === semester) {
+                                    return (<ClassChip
+                                        code={classItem.courseCode ?? classItem.name}
+                                        id={classItem.id}
+                                        handleClick={handleClick}/>);
                                 } else {
                                     return null;
                                 }

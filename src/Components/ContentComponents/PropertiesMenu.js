@@ -11,12 +11,14 @@ import AddPropertyMenu from "./PropertiesComponents/AddPropertyMenu";
 import {useSelector} from "react-redux";
 import {store} from "../../slices/store";
 import {getLastModifiedPropertyId, getPropertyBasics} from "../../slices/pageDataSlice";
+import {useParams} from "react-router-dom";
 
 export default function PropertiesMenu() {
     const [menuVisible, setMenuVisible] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
-
+    const isClass = useSelector(state => state.pageData.isClass);
     const lastModifiedItemId = useSelector(getLastModifiedPropertyId);
+    const params = useParams();
     const [idArr, setIdArr] = useState(getPropertyBasics(store.getState()));
     useEffect(() => {
         setIdArr(getPropertyBasics(store.getState()));
@@ -64,12 +66,12 @@ export default function PropertiesMenu() {
                         (idArr.map(entry => {
                             return (
                                 <MenuItem key={entry.id}>
-                                    <Property id={entry.id} type={entry.type}/>
+                                    <Property id={entry.id} type={entry.type} classID={isClass ? params.pageID : null}/>
                                 </MenuItem>
                             )
                         })) : (<div></div>)
                 }
-                <AddPropertyMenu/>
+                <AddPropertyMenu classID={isClass ? params.pageID : null}/>
             </Menu>
         </Grid>
 

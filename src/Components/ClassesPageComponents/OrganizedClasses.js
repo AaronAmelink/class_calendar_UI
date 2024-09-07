@@ -1,19 +1,21 @@
 import {Paper} from "@mui/material";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {useEffect, useState} from "react";
 import SemesterCard from "./SemesterCard";
 import Stack from "@mui/material/Stack";
 import ClassDialog from "./ClassDialog";
+import {setIsLookingAtClass} from "../../slices/siteDataSlice";
 
 
 export default function OrganizedClasses() {
     const classes = useSelector((state) => state.classData.classes);
     const [plannedSemesters, setPlannedSemesters] = useState([]);
-
+    const dispatch = useDispatch();
     const [dialogOpen, setDialogOpen] = useState(false);
     const [selectedClassID, setSelectedClassID] = useState(null);
 
     function handleDialogClose() {
+        dispatch(setIsLookingAtClass(null));
         setDialogOpen(false);
     }
 
@@ -24,7 +26,14 @@ export default function OrganizedClasses() {
     }
 
     useEffect(() => {
-        let newPlannedSemester = new Set(classes.map(classItem => classItem.planned));
+        let allSemestersPlanned = []
+        classes.forEach(classItem => {
+            let planned = classItem.properties.find(prop => prop.name === 'Planned')?.value;
+            if (planned) {
+                allSemestersPlanned.push(planned);
+            }
+        });
+        let newPlannedSemester = new Set(allSemestersPlanned ? allSemestersPlanned : []);
         setPlannedSemesters(newPlannedSemester ? [...newPlannedSemester] : []);
     }, [classes]);
 
@@ -39,7 +48,7 @@ export default function OrganizedClasses() {
             <Stack direction='row' sx={{height: 1, p: 5}} spacing={2}>
                 {
                     plannedSemesters.map(semester => {
-                        let relevantClasses = classes.filter(classItem => classItem.planned === semester);
+                        let relevantClasses = classes.filter(classItem => classItem.properties.find(prop => prop.name === 'Planned')?.value === semester);
                         return (<SemesterCard semester={semester} classes={relevantClasses}
                                               handleClick={handleChipClick}/>);
                     })

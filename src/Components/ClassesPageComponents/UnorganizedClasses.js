@@ -4,9 +4,10 @@ import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 import ClassChip from "./ClassChip";
 import Stack from "@mui/material/Stack";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {useState} from "react";
 import ClassDialog from "./ClassDialog";
+import {setIsLookingAtClass} from "../../slices/siteDataSlice";
 
 function CenteredChip({code, id, handleClick}) {
     return (
@@ -25,9 +26,11 @@ export default function UnorganizedClasses() {
     const classes = useSelector((state) => state.classData.classes);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [selectedClassID, setSelectedClassID] = useState(null);
+    const dispatch = useDispatch();
 
     function handleDialogClose() {
         setDialogOpen(false);
+        dispatch(setIsLookingAtClass(false));
     }
 
     function handleChipClick(courseID) {
@@ -57,9 +60,12 @@ export default function UnorganizedClasses() {
                       sx={{overflow: 'auto', height: 1 / 1.4, my: 2}}>
                     {
                         classes.map(classItem => {
-                            if (!classItem.planned) {
-                                return (<CenteredChip code={classItem.courseCode} id={classItem.id}
-                                                      handleClick={handleChipClick}/>);
+                            console.log(classItem);
+                            if (classItem.properties.length === 0 || !classItem.properties.find(property => property && property.name === 'planned')) {
+                                return (<CenteredChip
+                                    code={classItem.courseCode ?? classItem.name}
+                                    id={classItem.id}
+                                    handleClick={handleChipClick}/>);
                             } else {
                                 return null;
                             }

@@ -5,17 +5,16 @@ import {useSelector} from "react-redux";
 import {useParams} from "react-router-dom";
 import usePageData from "../../../customHooks/pageDataHook";
 
-export default function NameValue({id}) {
+export default function NameValue({id, classID = null}) {
     const propertySelector = useMemo(makePropertySelector, [])
-    console.log('name value property render');
     const {updateProperty} = usePageData();
     const params = useParams();
     const property = useSelector(state =>
-        propertySelector(state, id)
+        propertySelector(state, {id, classID})
     );
 
     function handleChange(newValue) {
-        updateProperty({...property, name: newValue}, params.pageID, id);
+        updateProperty({...property, name: newValue}, classID ? classID : params.pageID, id);
     }
 
     return (

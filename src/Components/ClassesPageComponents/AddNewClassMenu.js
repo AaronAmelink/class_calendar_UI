@@ -4,9 +4,8 @@ import {Add, CalendarMonth, Class, Extension, Numbers, Person, School} from "@mu
 import {useState} from "react";
 import MenuItem from "@mui/material/MenuItem";
 import Stack from "@mui/material/Stack";
-import {useDispatch} from "react-redux";
-import {addClass} from "../../slices/classDataSlice";
 import Typography from "@mui/material/Typography";
+import usePageData from "../../customHooks/pageDataHook";
 
 const {v4: uuidv4} = require('uuid');
 
@@ -50,7 +49,6 @@ function ClassInputField({icon, label, required, numbersOnly, CSV, value, setVal
 }
 
 export default function AddNewClassMenu() {
-    const dispatch = useDispatch();
     const [className, setClassName] = useState('');
     const [classNameEmpty, setClassNameEmpty] = useState(false);
     const [courseCodeEmpty, setCourseCodeEmpty] = useState(false);
@@ -61,6 +59,7 @@ export default function AddNewClassMenu() {
     const [season, setSeason] = useState([]);
     const [yearsOffered, setYearsOffered] = useState('');
     const inputSetters = [setClassName, setCourseCode, setCreditWorth, setPreRequisites, setProfessor, setYearsOffered];
+    const {addClass} = usePageData();
 
     const handleSeasonChange = (event) => {
         setSeason(event.target.value);
@@ -86,17 +85,37 @@ export default function AddNewClassMenu() {
 
         let id = uuidv4();
         let newClass = {
-            professor: professor,
-            seasonsOffered: season.toString(),
-            className: className,
-            courseCode: courseCode,
-            creditWorth: creditWorth,
-            preRequisites: preRequisites,
-            yearsOffered: yearsOffered,
+            name: className,
             id: id,
-            planned: className
+            courseCode: courseCode,
+            properties: []
         };
-        dispatch(addClass(newClass));
+        if (professor !== '') newClass.properties.push({
+            value: professor,
+            name: 'Proffesor',
+            type: 'text',
+            id: uuidv4()
+        });
+        console.log(season);
+        if (season.length !== 0 || yearsOffered !== '') newClass.properties.push({
+            value: (season.length > 0 ? season.join(', ') : '') + (yearsOffered !== '' ? ' ' + yearsOffered + (yearsOffered === 'Every' ? ' Year' : ' Years') : ''),
+            name: 'Offered',
+            type: 'text',
+            id: uuidv4()
+        });
+        if (preRequisites !== '') newClass.properties.push({
+            value: preRequisites,
+            name: 'Pre Requisites',
+            type: 'text',
+            id: uuidv4()
+        });
+        if (creditWorth !== '') newClass.properties.push({
+            value: creditWorth,
+            name: 'Credit Worth',
+            type: 'text',
+            id: uuidv4()
+        });
+        addClass(newClass);
 
         inputSetters.forEach(setter => {
             setter('');

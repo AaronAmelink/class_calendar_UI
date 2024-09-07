@@ -5,11 +5,15 @@ import {Link} from "react-router-dom";
 import pageURLs from "../PageComponents/pageURLs";
 import * as React from "react";
 import Stack from "@mui/material/Stack";
+import {useDispatch} from "react-redux";
+import {setIsLookingAtClass} from "../../slices/siteDataSlice";
 
 export default function ClassChip({id, code, handleClick}) {
+    const dispatch = useDispatch();
 
     function onClick() {
         handleClick(id);
+        dispatch(setIsLookingAtClass(true));
     }
 
     return (
