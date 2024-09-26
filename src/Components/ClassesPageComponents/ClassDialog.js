@@ -16,7 +16,6 @@ export default function ClassDialog({classID, open, handleClose}) {
     const selectedClass = useSelector(state =>
         classSelector(state, classID)
     )
-    console.log(selectedClass);
 
     return (
         <Dialog

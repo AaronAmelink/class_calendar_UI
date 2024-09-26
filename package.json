@@ -51,6 +51,8 @@
   "dependencies": {
     "@reduxjs/toolkit": "^2.2.6",
     "react-redux": "^9.1.2",
-    "serve": "^14.2.1"
+    "serve": "^14.2.1",
+    "@react-buddy/ide-toolbox": "^2.4.0",
+    "@react-buddy/palette-mui": "^5.0.1"
   }
 }

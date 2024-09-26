@@ -61,7 +61,7 @@ export default function UnorganizedClasses() {
                     {
                         classes.map(classItem => {
                             console.log(classItem);
-                            if (classItem.properties.length === 0 || !classItem.properties.find(property => property && property.name === 'planned')) {
+                            if (classItem.properties.length === 0 || !classItem.properties.find(property => property && property.name === 'Planned' && property.value.length > 1)) {
                                 return (<CenteredChip
                                     code={classItem.courseCode ?? classItem.name}
                                     id={classItem.id}

@@ -28,13 +28,15 @@ export default function OrganizedClasses() {
     useEffect(() => {
         let allSemestersPlanned = []
         classes.forEach(classItem => {
-            let planned = classItem.properties.find(prop => prop.name === 'Planned')?.value;
-            if (planned) {
-                allSemestersPlanned.push(planned);
+            let planned = classItem?.properties?.find(prop => prop.name === 'Planned');
+            console.log(JSON.stringify(planned));
+            if (typeof planned !== 'undefined' && planned !== null && planned?.value) {
+                allSemestersPlanned.push(planned?.value);
             }
         });
         let newPlannedSemester = new Set(allSemestersPlanned ? allSemestersPlanned : []);
         setPlannedSemesters(newPlannedSemester ? [...newPlannedSemester] : []);
+        console.log(newPlannedSemester);
     }, [classes]);
 
     return (
@@ -48,7 +50,11 @@ export default function OrganizedClasses() {
             <Stack direction='row' sx={{height: 1, p: 5}} spacing={2}>
                 {
                     plannedSemesters.map(semester => {
-                        let relevantClasses = classes.filter(classItem => classItem.properties.find(prop => prop.name === 'Planned')?.value === semester);
+                        let relevantClasses = classes.map(classItem => {
+                            if (classItem.properties?.find(prop => prop.name === 'Planned' && prop.value === semester)) {
+                                return classItem;
+                            }
+                        })
                         return (<SemesterCard semester={semester} classes={relevantClasses}
                                               handleClick={handleChipClick}/>);
                     })

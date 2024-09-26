@@ -92,10 +92,12 @@ function usePageData() {
 
     function updateName(name, pageId) {
         if (!isLookingAtClass && !isClass) {
+            dispatch(setCurrentPageName(name));
+        } else {
+            dispatch(setCurrentPageName(name));
             dispatch(updateClassName({name: name, id: pageId}));
         }
-        dispatch(setCurrentPageName(name));
-        dispatch(addChange({type: "name", name: name, id: pageId}));
+        dispatch(addChange({type: !isLookingAtClass && !isClass ? 'name' : 'className', name: name, id: pageId}));
     }
 
     function updateProperty(property, pageId, propertyID) {

@@ -137,16 +137,16 @@ export const makePropertySelector = () => {
         [state => state.pageData.currentPage?.properties, state => state.classData.classes, (state, id) => id, state => state.pageData.isClass, state => state.siteData.isLookingAtClass],
         (properties, classes, id, isClass, isLookingAtClass) => {
             if (isClass || isLookingAtClass) {
-                return classes.find(classItem => classItem.id === id.classID).properties.find(item => item?.id === id.id);
+                return classes?.find(classItem => classItem.id === id.classID).properties.find(item => item?.id === id.id);
             } else {
-                return properties.find(item => item?.id === id.id);
+                return properties?.find(item => item?.id === id.id);
             }
         })
     return selectProperty;
 }
 export const getPropertyBasics = (state) => {
     if (state.pageData.isClass) {
-        let classItem = state.classData.classes.find(item => item.id === state.pageData.currentPage._id);
+        let classItem = state.classData.classes?.find(item => item.id === state.pageData.currentPage._id);
         return classItem.properties.map(property => {
             return {
                 id: property.id,

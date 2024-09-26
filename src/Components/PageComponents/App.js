@@ -1,9 +1,9 @@
 import {createBrowserRouter, RouterProvider} from "react-router-dom";
 import LogInPage from "./LogInPage";
-import Document from "./document";
+import Document from "../routes/document";
 import ErrorPage from "./ErrorPage";
-import ClassesPage from "./ClassesPage";
-import EditPage from "./EditPage";
+import ClassesPage from "../routes/ClassesPage";
+import EditPage from "../routes/EditPage";
 import pageURLs from "./pageURLs";
 
 function App() {

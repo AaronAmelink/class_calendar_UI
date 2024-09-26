@@ -124,9 +124,10 @@ export default function AddNewClassMenu() {
     }
 
     return (
-        <Paper elevation={0} variant='outlined'
-               sx={{bgcolor: 'background.elevated', boxShadow: 5, height: 1, px: 5, overflow: 'auto'}}>
-            <Stack container spacing={2}>
+        <Paper elevation={0} variant='outlined' container
+               sx={{bgcolor: 'background.elevated', boxShadow: 5, height: 1, px: 5, overflow: 'auto', pt: 2}}>
+            <Stack container spacing={2} alignItems="center"
+                   justifyContent="center" sx={{pr: 2, pt: 2}}>
                 <Grid container spacing={2}>
                     <Grid item xs={4}>
                         <ClassInputField required icon={<Class sx={{mr: 1, my: 0.5}}/>} label='Class Name'

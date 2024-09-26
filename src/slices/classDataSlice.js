@@ -18,7 +18,7 @@ const classData = createSlice({
                 addClassToState(state.selectedClass);
             }
             let id = action.payload;
-            state.selectedClass = state.classes.find((c) => c.id === id);
+            state.selectedClass = state.classes?.find((c) => c.id === id);
             removeClass(id);
         },
         updateClassProperty(state, action) {
@@ -33,7 +33,7 @@ const classData = createSlice({
         },
         addPropertyToClass(state, action) {
             console.log(action);
-            state.classes.find(classItem => classItem.id === action.payload.classID).properties.push(action.payload.property);
+            state.classes?.find(classItem => classItem.id === action.payload.classID).properties.push(action.payload.property);
         },
         removePropertyFromClass(state, action) {
             console.log(action);
